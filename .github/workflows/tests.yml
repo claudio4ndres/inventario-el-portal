@@ -26,10 +26,13 @@ jobs:
           cp .env.example .env
           php artisan key:generate
       - name: Ejecutar pruebas
-        run: php artisan test --log-junit junit.xml
+        shell: bash
+        run: |
+          set -o pipefail
+          php artisan test --no-ansi --log-junit junit.xml 2>&1 | tee test-output.txt
       - name: Publicar fallos como anotaciones
         if: failure()
-        run: python3 .github/scripts/junit_annotations.py junit.xml
+        run: python3 .github/scripts/junit_annotations.py junit.xml test-output.txt
 
   phpunit-mysql:
     name: PHPUnit (MySQL 8.4, motor de producción)
@@ -66,7 +69,10 @@ jobs:
           php artisan key:generate
       - name: Ejecutar pruebas sobre MySQL
         # Las variables DB_* del job tienen prioridad: PHPUnit no sobrescribe variables ya definidas
-        run: php artisan test --log-junit junit.xml
+        shell: bash
+        run: |
+          set -o pipefail
+          php artisan test --no-ansi --log-junit junit.xml 2>&1 | tee test-output.txt
       - name: Publicar fallos como anotaciones
         if: failure()
-        run: python3 .github/scripts/junit_annotations.py junit.xml
+        run: python3 .github/scripts/junit_annotations.py junit.xml test-output.txt
