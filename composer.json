@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "claudio4ndres/inventario-el-portal",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Sistema web de gestión de inventario y ventas para el almacén El Portal (proyecto de título).",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
