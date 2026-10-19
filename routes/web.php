@@ -1,7 +1,53 @@
 <?php
 
+use App\Http\Controllers\AlertaController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\PanelController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\RecepcionController;
+use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+// HU01: autenticación
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'create'])->name('login');
+    Route::post('/login', [AuthController::class, 'store'])->name('login.store');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+    Route::get('/', PanelController::class)->name('panel');
+
+    // Consulta de productos: todos los roles
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
+
+    // HU02: mantenedor de productos y HU07: bitácora -> solo administrador
+    Route::middleware('rol:administrador')->group(function () {
+        Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
+        Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
+        Route::get('/productos/{producto}/editar', [ProductoController::class, 'edit'])->name('productos.edit');
+        Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
+        Route::patch('/productos/{producto}/estado', [ProductoController::class, 'toggle'])->name('productos.toggle');
+
+        Route::get('/movimientos', [MovimientoController::class, 'index'])->name('movimientos.index');
+    });
+
+    // HU03: recepción y HU06: alertas -> administrador y bodeguero
+    Route::middleware('rol:administrador,bodeguero')->group(function () {
+        Route::get('/recepciones', [RecepcionController::class, 'index'])->name('recepciones.index');
+        Route::get('/recepciones/crear', [RecepcionController::class, 'create'])->name('recepciones.create');
+        Route::post('/recepciones', [RecepcionController::class, 'store'])->name('recepciones.store');
+
+        Route::get('/alertas', [AlertaController::class, 'index'])->name('alertas.index');
+    });
+
+    // HU04: ventas -> administrador y vendedor
+    Route::middleware('rol:administrador,vendedor')->group(function () {
+        Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+        Route::get('/ventas/crear', [VentaController::class, 'create'])->name('ventas.create');
+        Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+        Route::get('/ventas/{venta}', [VentaController::class, 'show'])->name('ventas.show');
+    });
 });
