@@ -1,0 +1,49 @@
+<?php
+
+// Mensajes de validación en español para las reglas usadas en el MPV.
+return [
+    'after' => 'El campo :attribute debe ser una fecha posterior a :date.',
+    'array' => 'El campo :attribute debe ser una lista.',
+    'boolean' => 'El campo :attribute debe ser verdadero o falso.',
+    'date' => 'El campo :attribute no es una fecha válida.',
+    'email' => 'El campo :attribute debe ser un correo válido.',
+    'exists' => 'El valor seleccionado en :attribute no es válido.',
+    'in' => 'El valor seleccionado en :attribute no es válido.',
+    'integer' => 'El campo :attribute debe ser un número entero.',
+    'max' => [
+        'numeric' => 'El campo :attribute no debe ser mayor que :max.',
+        'string' => 'El campo :attribute no debe superar :max caracteres.',
+        'array' => 'El campo :attribute no debe tener más de :max elementos.',
+    ],
+    'min' => [
+        'numeric' => 'El campo :attribute debe ser al menos :min.',
+        'string' => 'El campo :attribute debe tener al menos :min caracteres.',
+        'array' => 'El campo :attribute debe tener al menos :min elemento(s).',
+    ],
+    'regex' => 'El formato de :attribute no es válido.',
+    'required' => 'El campo :attribute es obligatorio.',
+    'string' => 'El campo :attribute debe ser texto.',
+    'unique' => 'El :attribute ya está registrado.',
+
+    'attributes' => [
+        'codigo_barras' => 'código de barras',
+        'nombre' => 'nombre',
+        'precio_venta' => 'precio de venta',
+        'punto_reorden' => 'punto de reorden',
+        'clase_abc' => 'clase ABC',
+        'proveedor_id' => 'proveedor',
+        'numero_documento' => 'N.º de documento',
+        'lineas' => 'productos recibidos',
+        'lineas.*.producto_id' => 'producto',
+        'lineas.*.cantidad' => 'cantidad',
+        'lineas.*.codigo_lote' => 'código de lote',
+        'lineas.*.fecha_vencimiento' => 'fecha de vencimiento',
+        'lineas.*.costo_unitario' => 'costo unitario',
+        'items' => 'productos de la venta',
+        'items.*.producto_id' => 'producto',
+        'items.*.cantidad' => 'cantidad',
+        'medio_pago' => 'medio de pago',
+        'email' => 'correo',
+        'password' => 'contraseña',
+    ],
+];
