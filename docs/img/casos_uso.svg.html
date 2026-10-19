@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<style>
+  body { margin: 0; background: #fff; font-family: Calibri, Carlito, Arial, sans-serif; }
+  svg text { font-family: Calibri, Carlito, Arial, sans-serif; }
+</style></head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="abierta" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto">
+      <path d="M1,1 L11,6 L1,11" fill="none" stroke="#333" stroke-width="1.5"/></marker>
+    <marker id="herencia" viewBox="0 0 20 20" refX="19" refY="10" markerWidth="18" markerHeight="18" orient="auto">
+      <path d="M1,1 L19,10 L1,19 Z" fill="#fff" stroke="#333" stroke-width="1.5"/></marker>
+    <g id="actor">
+      <circle cx="0" cy="-48" r="14" fill="#fff" stroke="#222" stroke-width="2.5"/>
+      <line x1="0" y1="-34" x2="0" y2="6" stroke="#222" stroke-width="2.5"/>
+      <line x1="-24" y1="-20" x2="24" y2="-20" stroke="#222" stroke-width="2.5"/>
+      <line x1="0" y1="6" x2="-20" y2="38" stroke="#222" stroke-width="2.5"/>
+      <line x1="0" y1="6" x2="20" y2="38" stroke="#222" stroke-width="2.5"/>
+    </g>
+  </defs>
+
+  <text x="800" y="38" text-anchor="middle" font-size="28" font-weight="700" fill="#1b4332">Diagrama de casos de uso — Sistema de inventario y ventas El Portal</text>
+
+  <!-- Límite del sistema: MPV -->
+  <rect x="300" y="70" width="740" height="800" rx="14" fill="#f3faf6" stroke="#2d6a4f" stroke-width="2.5"/>
+  <text x="320" y="102" font-size="21" font-weight="700" fill="#2d6a4f">Sistema web El Portal · MPV (v0.1.0)</text>
+
+  <!-- Casos de uso del MPV -->
+  <g font-size="19" text-anchor="middle" fill="#1b1b1b">
+    <ellipse cx="560" cy="160" rx="150" ry="38" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="560" y="156">CU01 Iniciar sesión</text><text x="560" y="178" font-size="15" fill="#555">HU01 · K8</text>
+
+    <ellipse cx="560" cy="270" rx="150" ry="42" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="560" y="262">CU04 Registrar venta</text><text x="560" y="284" font-size="15" fill="#555">desc. de stock por lote · HU04 · K1</text>
+
+    <ellipse cx="880" cy="380" rx="140" ry="40" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="880" y="374">CU05 Buscar producto</text><text x="880" y="396" font-size="15" fill="#555">por código de barras · HU05 · K5</text>
+
+    <ellipse cx="560" cy="440" rx="160" ry="42" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="560" y="432">CU03 Registrar recepción</text><text x="560" y="454" font-size="15" fill="#555">con lote y vencimiento · HU03 · K2</text>
+
+    <ellipse cx="560" cy="560" rx="150" ry="40" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="560" y="554">CU06 Ver alertas de reorden</text><text x="560" y="576" font-size="15" fill="#555">HU06 · K3</text>
+
+    <ellipse cx="560" cy="680" rx="150" ry="40" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="560" y="674">CU02 Gestionar productos</text><text x="560" y="696" font-size="15" fill="#555">HU02 · K5</text>
+
+    <ellipse cx="560" cy="800" rx="150" ry="40" fill="#fff" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="560" y="794">CU07 Consultar bitácora</text><text x="560" y="816" font-size="15" fill="#555">de movimientos · HU07 · K8</text>
+  </g>
+
+  <!-- include -->
+  <line x1="676" y1="296" x2="772" y2="352" stroke="#333" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#abierta)"/>
+  <text x="742" y="314" font-size="16" fill="#333" transform="rotate(30 742 314)">«include»</text>
+
+  <!-- Actores -->
+  <use href="#actor" x="130" y="220"/>
+  <text x="130" y="285" text-anchor="middle" font-size="20" font-weight="700">Vendedor</text>
+  <text x="130" y="306" text-anchor="middle" font-size="15" fill="#555">(persona de caja)</text>
+
+  <use href="#actor" x="130" y="500"/>
+  <text x="130" y="565" text-anchor="middle" font-size="20" font-weight="700">Bodeguero</text>
+  <text x="130" y="586" text-anchor="middle" font-size="15" fill="#555">(persona de apoyo)</text>
+
+  <use href="#actor" x="130" y="770"/>
+  <text x="130" y="835" text-anchor="middle" font-size="20" font-weight="700">Administrador</text>
+  <text x="130" y="856" text-anchor="middle" font-size="15" fill="#555">(dueño)</text>
+
+  <!-- Asociaciones -->
+  <g stroke="#222" stroke-width="2">
+    <line x1="160" y1="196" x2="413" y2="168"/>
+    <line x1="160" y1="206" x2="411" y2="268"/>
+    <line x1="160" y1="472" x2="420" y2="178"/>
+    <line x1="160" y1="482" x2="401" y2="444"/>
+    <line x1="160" y1="492" x2="416" y2="552"/>
+    <line x1="160" y1="748" x2="412" y2="688"/>
+    <line x1="160" y1="758" x2="412" y2="796"/>
+  </g>
+  <!-- Generalización: el Administrador hereda los casos de uso de Vendedor y Bodeguero -->
+  <path d="M104,724 C62,650 58,520 112,458" fill="none" stroke="#333" stroke-width="2" marker-end="url(#herencia)"/>
+  <path d="M96,730 C10,620 8,300 112,178" fill="none" stroke="#333" stroke-width="2" marker-end="url(#herencia)"/>
+  <text x="26" y="470" font-size="15" fill="#555" transform="rotate(-90 26 470)">generalización (hereda)</text>
+
+  <!-- Incrementos siguientes -->
+  <rect x="1080" y="70" width="500" height="800" rx="14" fill="#f6f6f6" stroke="#9a9a9a" stroke-width="2" stroke-dasharray="10 7"/>
+  <text x="1100" y="102" font-size="21" font-weight="700" fill="#666">Incrementos siguientes (HU08–HU17)</text>
+  <g font-size="17" text-anchor="middle" fill="#555">
+    <ellipse cx="1330" cy="160" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="166">Gestionar usuarios y proveedores · HU08–09</text>
+    <ellipse cx="1330" cy="240" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="246">Calcular punto de reorden · HU10</text>
+    <ellipse cx="1330" cy="320" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="326">Generar orden de compra sugerida · HU11</text>
+    <ellipse cx="1330" cy="400" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="406">Ver lotes por vencer (FIFO) · HU12</text>
+    <ellipse cx="1330" cy="480" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="486">Registrar mermas con motivo · HU13</text>
+    <ellipse cx="1330" cy="560" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="566">Conteo cíclico y ajustes · HU14</text>
+    <ellipse cx="1330" cy="640" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="646">Tablero de indicadores · HU15</text>
+    <ellipse cx="1330" cy="720" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="726">Importar catálogo inicial · HU16</text>
+    <ellipse cx="1330" cy="800" rx="210" ry="30" fill="#fff" stroke="#9a9a9a" stroke-dasharray="6 5"/><text x="1330" y="806">Clasificación ABC automática · HU17</text>
+  </g>
+</svg>
+</body></html>
