@@ -126,3 +126,10 @@ erDiagram
 - **HU14:** `conteos` y `detalle_conteos`.
 
 El modelo del MPV no requiere cambios para soportarlas; solo se agregan tablas.
+
+## Imágenes
+
+- [Diagrama ER compacto](img/modelo_er.png)
+- [Diagrama ER detallado](img/modelo_er_detallado.png)
+- [Diagrama de casos de uso](img/casos_uso.png)
+- [Mockups](img/mockups/): 14 pantallas, 9 del MPV y 5 de los incrementos siguientes
