@@ -35,6 +35,7 @@
                 @endif
                 @if($u->tieneRol('administrador'))
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('movimientos.*')) active @endif" href="{{ route('movimientos.index') }}">Bitácora</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('usuarios.*')) active @endif" href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a></li>
                 @endif
             </ul>
             <span class="navbar-text text-white me-3"><i class="bi bi-person-circle"></i> {{ $u->name }} <span class="badge bg-light text-success">{{ $u->rol }}</span></span>
