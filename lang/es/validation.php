@@ -5,6 +5,7 @@ return [
     'after' => 'El campo :attribute debe ser una fecha posterior a :date.',
     'array' => 'El campo :attribute debe ser una lista.',
     'boolean' => 'El campo :attribute debe ser verdadero o falso.',
+    'confirmed' => 'La confirmación de :attribute no coincide.',
     'date' => 'El campo :attribute no es una fecha válida.',
     'email' => 'El campo :attribute debe ser un correo válido.',
     'exists' => 'El valor seleccionado en :attribute no es válido.',
@@ -45,5 +46,8 @@ return [
         'medio_pago' => 'medio de pago',
         'email' => 'correo',
         'password' => 'contraseña',
+        'name' => 'nombre',
+        'rol' => 'rol',
+        'activo' => 'estado',
     ],
 ];
