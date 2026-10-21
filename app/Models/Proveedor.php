@@ -23,4 +23,10 @@ class Proveedor extends Model
     {
         return $this->hasMany(Recepcion::class);
     }
+
+    /** HU09: un proveedor con recepciones no se elimina, se desactiva. */
+    public function tieneHistoria(): bool
+    {
+        return $this->recepciones()->exists();
+    }
 }
