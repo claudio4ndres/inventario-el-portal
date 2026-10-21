@@ -117,6 +117,7 @@ erDiagram
 | lotes | cantidad_disponible | int unsigned | ≥ 0 | Saldo del lote; la suma de todos los lotes es el stock |
 | movimientos | tipo | varchar(10) | ENTRADA, SALIDA, AJUSTE o MERMA | Naturaleza del movimiento |
 | movimientos | stock_resultante | int unsigned | NOT NULL | Stock total del producto después del movimiento |
+| proveedores | rut | varchar(12) | UNIQUE, NOT NULL | RUT con dígito verificador válido (módulo 11), guardado normalizado como `76.111.111-6` (HU09) |
 | users | rol | varchar(20) | administrador, vendedor o bodeguero | Permisos (K8) |
 
 ## Extensiones previstas después del MPV
