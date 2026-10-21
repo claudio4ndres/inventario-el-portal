@@ -35,6 +35,7 @@
                 @endif
                 @if($u->tieneRol('administrador'))
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('movimientos.*')) active @endif" href="{{ route('movimientos.index') }}">Bitácora</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('proveedores.*')) active @endif" href="{{ route('proveedores.index') }}"><i class="bi bi-truck"></i> Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('usuarios.*')) active @endif" href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a></li>
                 @endif
             </ul>
