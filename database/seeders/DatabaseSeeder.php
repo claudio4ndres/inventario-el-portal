@@ -20,9 +20,11 @@ class DatabaseSeeder extends Seeder
         $vendedor = User::create(['name' => 'Caja', 'email' => 'caja@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::VENDEDOR]);
         $bodeguero = User::create(['name' => 'Bodega', 'email' => 'bodega@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::BODEGUERO]);
 
-        $lacteos = Proveedor::create(['rut' => '76.111.111-1', 'razon_social' => 'Distribuidora Lácteos del Sur', 'telefono' => '+56222222222']);
-        $abarrotes = Proveedor::create(['rut' => '76.222.222-2', 'razon_social' => 'Mayorista Abarrotes Central', 'telefono' => '+56233333333']);
-        $panaderia = Proveedor::create(['rut' => '76.333.333-3', 'razon_social' => 'Panificadora Valle Grande', 'telefono' => '+56244444444']);
+        $lacteos = Proveedor::create(['rut' => '76.111.111-6', 'razon_social' => 'Distribuidora Lácteos del Sur', 'telefono' => '+56222222222']);
+        $abarrotes = Proveedor::create(['rut' => '76.222.222-1', 'razon_social' => 'Mayorista Abarrotes Central', 'telefono' => '+56233333333']);
+        $panaderia = Proveedor::create(['rut' => '76.333.333-7', 'razon_social' => 'Panificadora Valle Grande', 'telefono' => '+56244444444']);
+        // Proveedor inactivo: no aparece en la recepción (HU09)
+        Proveedor::create(['rut' => '76.444.444-2', 'razon_social' => 'Embutidos La Montaña (sin contrato)', 'telefono' => '+56255555555', 'activo' => false]);
 
         $p = fn (string $codigo, string $nombre, int $precio, int $reorden, string $abc) => Producto::create([
             'codigo_barras' => $codigo, 'nombre' => $nombre, 'precio_venta' => $precio,

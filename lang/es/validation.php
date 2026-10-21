@@ -22,6 +22,7 @@ return [
         'array' => 'El campo :attribute debe tener al menos :min elemento(s).',
     ],
     'regex' => 'El formato de :attribute no es válido.',
+    'rut' => 'El :attribute no es válido: revise el formato y el dígito verificador.',
     'required' => 'El campo :attribute es obligatorio.',
     'string' => 'El campo :attribute debe ser texto.',
     'unique' => 'El :attribute ya está registrado.',
@@ -49,5 +50,8 @@ return [
         'name' => 'nombre',
         'rol' => 'rol',
         'activo' => 'estado',
+        'rut' => 'RUT',
+        'razon_social' => 'razón social',
+        'telefono' => 'teléfono',
     ],
 ];
