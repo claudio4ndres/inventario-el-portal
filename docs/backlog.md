@@ -18,7 +18,7 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 | 7 | HU07 | Bitácora de movimientos | Must | — | hecha |
 | 8 | HU08 | Gestionar usuarios y roles | Should | HU01 | hecha |
 | 9 | HU09 | Gestionar proveedores | Should | — | hecha |
-| 10 | HU12 | Alertas de lotes por vencer (FEFO) | Should | HU03 | pendiente |
+| 10 | HU12 | Alertas de lotes por vencer (FEFO) | Should | HU03 | hecha |
 | 11 | HU13 | Registrar mermas con cantidad, costo y motivo | Should | HU03 | pendiente |
 | 12 | HU10 | Calcular punto de reorden automáticamente | Should | HU04 | pendiente |
 | 13 | HU11 | Orden de compra sugerida y recepción contra OC | Should | HU09, HU10 | pendiente |
@@ -92,3 +92,4 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - 20-10-2026: backlog creado. MPV v0.1.0 integrado en `main` (33 pruebas en verde).
 - 20-10-2026: HU08 (gestionar usuarios y roles) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (49 pruebas en total; 16 nuevas).
 - 21-10-2026: HU09 (gestionar proveedores con RUT validado por módulo 11) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (70 pruebas en total; 21 nuevas). Sin cambios de esquema.
+- 22-10-2026: HU12 (alertas de lotes por vencer, orden FEFO, ventana configurable de 7 días por defecto) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (79 pruebas en total; 9 nuevas). Sin cambios de esquema.
