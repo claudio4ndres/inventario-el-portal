@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Lote;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Support\Rut;
@@ -24,5 +25,10 @@ class SeederTest extends TestCase
         // HU09: los RUT de demostración tienen dígito verificador válido y hay un proveedor inactivo
         Proveedor::all()->each(fn (Proveedor $p) => $this->assertTrue(Rut::esValido($p->rut), "RUT inválido: {$p->rut}"));
         $this->assertSame(1, Proveedor::where('activo', false)->count());
+
+        // HU12: hay lotes por vencer en 7 días y al menos uno ya vencido para la demostración
+        $porVencer = Lote::porVencer(7)->get();
+        $this->assertGreaterThan(1, $porVencer->count());
+        $this->assertTrue($porVencer->contains(fn (Lote $l) => $l->estaVencido()));
     }
 }
