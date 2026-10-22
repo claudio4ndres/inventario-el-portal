@@ -45,6 +45,8 @@ class DatabaseSeeder extends Seeder
             ['producto_id' => $leche->id, 'cantidad' => 10, 'codigo_lote' => 'LE-2611A', 'fecha_vencimiento' => now()->addDays(4)->toDateString(), 'costo_unitario' => 850],
             ['producto_id' => $leche->id, 'cantidad' => 24, 'codigo_lote' => 'LE-2611B', 'fecha_vencimiento' => now()->addDays(20)->toDateString(), 'costo_unitario' => 850],
             ['producto_id' => $yogur->id, 'cantidad' => 12, 'codigo_lote' => 'YO-0912', 'fecha_vencimiento' => now()->addDays(6)->toDateString(), 'costo_unitario' => 280],
+            // Lote ya vencido: aparece destacado en "Lotes por vencer" (HU12)
+            ['producto_id' => $yogur->id, 'cantidad' => 3, 'codigo_lote' => 'YO-0901', 'fecha_vencimiento' => now()->subDay()->toDateString(), 'costo_unitario' => 280],
         ]);
         $inventario->registrarRecepcion($bodeguero, ['proveedor_id' => $abarrotes->id, 'numero_documento' => 'F-55871'], [
             ['producto_id' => $huevos->id, 'cantidad' => 8, 'codigo_lote' => 'HU-1020', 'fecha_vencimiento' => now()->addDays(18)->toDateString(), 'costo_unitario' => 2400],
