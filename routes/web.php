@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LoteController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\ProductoController;
@@ -54,13 +55,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
     });
 
-    // HU03: recepción y HU06: alertas -> administrador y bodeguero
+    // HU03: recepción, HU06: alertas y HU12: lotes por vencer -> administrador y bodeguero
     Route::middleware('rol:administrador,bodeguero')->group(function () {
         Route::get('/recepciones', [RecepcionController::class, 'index'])->name('recepciones.index');
         Route::get('/recepciones/crear', [RecepcionController::class, 'create'])->name('recepciones.create');
         Route::post('/recepciones', [RecepcionController::class, 'store'])->name('recepciones.store');
 
         Route::get('/alertas', [AlertaController::class, 'index'])->name('alertas.index');
+        Route::get('/lotes/por-vencer', [LoteController::class, 'porVencer'])->name('lotes.por-vencer');
     });
 
     // HU04: ventas -> administrador y vendedor

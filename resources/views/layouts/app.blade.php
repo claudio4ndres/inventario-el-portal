@@ -32,6 +32,7 @@
                 @if($u->tieneRol('administrador', 'bodeguero'))
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('recepciones.*')) active @endif" href="{{ route('recepciones.index') }}">Recepciones</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('alertas.*')) active @endif" href="{{ route('alertas.index') }}"><i class="bi bi-bell"></i> Alertas</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('lotes.*')) active @endif" href="{{ route('lotes.por-vencer') }}"><i class="bi bi-hourglass-split"></i> Por vencer</a></li>
                 @endif
                 @if($u->tieneRol('administrador'))
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('movimientos.*')) active @endif" href="{{ route('movimientos.index') }}">Bitácora</a></li>

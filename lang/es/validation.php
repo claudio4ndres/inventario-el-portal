@@ -53,5 +53,6 @@ return [
         'rut' => 'RUT',
         'razon_social' => 'razón social',
         'telefono' => 'teléfono',
+        'dias' => 'días',
     ],
 ];
