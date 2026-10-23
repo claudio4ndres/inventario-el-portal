@@ -89,10 +89,11 @@ erDiagram
         string tipo "ENTRADA|SALIDA|AJUSTE|MERMA"
         int cantidad
         int stock_resultante
+        int costo_total "nullable, solo MERMA (HU13)"
+        string motivo_merma "vencimiento|dano|robo|otro (HU13)"
         bigint detalle_venta_id FK "nullable"
         bigint recepcion_id FK "nullable"
         string motivo
-   
     }
 ```
 
@@ -117,16 +118,19 @@ erDiagram
 | lotes | cantidad_disponible | int unsigned | ≥ 0 | Saldo del lote; la suma de todos los lotes es el stock |
 | movimientos | tipo | varchar(10) | ENTRADA, SALIDA, AJUSTE o MERMA | Naturaleza del movimiento |
 | movimientos | stock_resultante | int unsigned | NOT NULL | Stock total del producto después del movimiento |
+| movimientos | costo_total | int unsigned | NULL permitido | Solo en MERMA: cantidad × costo unitario del lote, copiado al registrar (HU13) |
+| movimientos | motivo_merma | varchar(20) | vencimiento, dano, robo u otro; NULL si no es merma | Causa de la merma, base del indicador M3 (HU13, HU15) |
 | proveedores | rut | varchar(12) | UNIQUE, NOT NULL | RUT con dígito verificador válido (módulo 11), guardado normalizado como `76.111.111-6` (HU09) |
 | users | rol | varchar(20) | administrador, vendedor o bodeguero | Permisos (K8) |
 
 ## Extensiones previstas después del MPV
 
 - **HU11:** `ordenes_compra` y `detalle_ordenes_compra`.
-- **HU13:** registro de mermas, que usa `movimientos` con `tipo = MERMA` y `costo_unitario` del lote.
 - **HU14:** `conteos` y `detalle_conteos`.
 
 El modelo del MPV no requiere cambios para soportarlas; solo se agregan tablas.
+
+**Implementado (HU13):** las mermas se registran en `movimientos` con `tipo = MERMA`. La migración `2026_10_23_000001` agrega `costo_total` (se copia al registrar, igual que el precio en `detalle_ventas`, para que el historial no cambie) y `motivo_merma`, con un índice `(tipo, motivo_merma)` para el indicador de merma por vencimiento.
 
 ## Imágenes
 
