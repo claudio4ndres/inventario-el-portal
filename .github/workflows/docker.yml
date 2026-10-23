@@ -1,0 +1,48 @@
+name: Imagen Docker
+
+# Construye la imagen, la prueba (levanta el contenedor y verifica que responda)
+# y la publica en GitHub Container Registry: ghcr.io/claudio4ndres/inventario-el-portal
+on:
+  push:
+    branches: [main, develop, 'feature/docker']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - name: Construir imagen
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: inventario-el-portal:ci
+      - name: Prueba de humo (el contenedor responde)
+        run: |
+          docker run -d --name app -p 8000:8000 inventario-el-portal:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/up >/dev/null; then break; fi
+            sleep 2
+          done
+          curl -fsS -o /dev/null -w "GET /up -> %{http_code}\n" http://localhost:8000/up
+          curl -fsS -o /dev/null -w "GET /login -> %{http_code}\n" http://localhost:8000/login
+          curl -fsS http://localhost:8000/login | grep -q "Almacén El Portal"
+      - name: Registro del contenedor si falla
+        if: failure()
+        run: |
+          echo "::error title=Logs del contenedor::$(docker logs app 2>&1 | tail -40 | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')"
+      - name: Publicar en ghcr.io
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          TAG=$([ "${GITHUB_REF_NAME}" = "main" ] && echo latest || echo develop)
+          docker tag inventario-el-portal:ci ghcr.io/claudio4ndres/inventario-el-portal:$TAG
+          docker tag inventario-el-portal:ci ghcr.io/claudio4ndres/inventario-el-portal:sha-${GITHUB_SHA::7}
+          docker push ghcr.io/claudio4ndres/inventario-el-portal:$TAG
+          docker push ghcr.io/claudio4ndres/inventario-el-portal:sha-${GITHUB_SHA::7}

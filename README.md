@@ -23,6 +23,26 @@ Proyecto de título de Ingeniería en Computación e Informática — Claudio Fi
 - Composer 2
 - MySQL 8.4 (producción) o SQLite (desarrollo rápido)
 
+## Ejecutar con Docker (sin instalar PHP)
+
+Requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+```bash
+git clone https://github.com/claudio4ndres/inventario-el-portal.git
+cd inventario-el-portal
+git checkout develop
+docker compose up --build        # primera vez: unos minutos
+```
+
+Abre http://localhost:8000. La base de datos se recrea con los datos de demostración en cada inicio (`DEMO_RESET=true`).
+
+**Imagen ya construida:** GitHub Actions publica cada versión de `develop` en GitHub Container Registry:
+
+```bash
+docker login ghcr.io -u claudio4ndres      # contraseña: token con permiso read:packages
+docker run --rm -p 8000:8000 ghcr.io/claudio4ndres/inventario-el-portal:develop
+```
+
 ## Instalación local
 
 ```bash
