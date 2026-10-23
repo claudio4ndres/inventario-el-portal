@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\SaldoLoteInsuficienteException;
 use App\Exceptions\StockInsuficienteException;
 use App\Models\DetalleVenta;
 use App\Models\Lote;
@@ -11,6 +12,8 @@ use App\Models\Recepcion;
 use App\Models\User;
 use App\Models\Venta;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 /**
  * Reglas de negocio del inventario (controles K1, K2 y K5).
@@ -147,6 +150,52 @@ class InventarioService
             $venta->update(['total' => $total]);
 
             return $venta->load('detalles.producto');
+        });
+    }
+
+    /**
+     * HU13 / K7: registra una merma de un lote (vencimiento, daño, robo u otro).
+     *
+     * Descuenta el saldo del lote y deja un movimiento MERMA con su costo
+     * (cantidad × costo unitario del lote), todo en la misma transacción.
+     *
+     * @throws SaldoLoteInsuficienteException si la cantidad supera el saldo del lote (no se registra nada)
+     */
+    public function registrarMerma(User $usuario, int $loteId, int $cantidad, string $motivo, ?string $observacion = null): Movimiento
+    {
+        if (! array_key_exists($motivo, Movimiento::MOTIVOS_MERMA)) {
+            throw new InvalidArgumentException("Motivo de merma no válido: {$motivo}");
+        }
+
+        return DB::transaction(function () use ($usuario, $loteId, $cantidad, $motivo, $observacion) {
+            // lockForUpdate: impide que una venta simultánea consuma el mismo saldo
+            // entre la verificación y el descuento.
+            $lote = Lote::query()->lockForUpdate()->findOrFail($loteId);
+
+            if ($cantidad < 1 || $cantidad > $lote->cantidad_disponible) {
+                // K5: nunca saldo negativo; la excepción revierte la transacción
+                throw new SaldoLoteInsuficienteException($lote, $cantidad);
+            }
+
+            $lote->decrement('cantidad_disponible', $cantidad);
+
+            $detalle = 'Merma por '.mb_strtolower(Movimiento::MOTIVOS_MERMA[$motivo]);
+            $observacion = trim((string) $observacion);
+            if ($observacion !== '') {
+                $detalle .= ': '.$observacion;
+            }
+
+            return Movimiento::create([
+                'producto_id' => $lote->producto_id,
+                'lote_id' => $lote->id,
+                'user_id' => $usuario->id,
+                'tipo' => Movimiento::MERMA,
+                'cantidad' => $cantidad,
+                'stock_resultante' => $this->stockDe($lote->producto_id),
+                'costo_total' => $cantidad * $lote->costo_unitario,
+                'motivo_merma' => $motivo,
+                'motivo' => Str::limit($detalle, 117),   // la columna admite 120 caracteres
+            ]);
         });
     }
 

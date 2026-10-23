@@ -34,7 +34,7 @@
             <td class="text-end">{{ $m->tipo === 'ENTRADA' ? '+' : '−' }}{{ $m->cantidad }}</td>
             <td class="text-end fw-bold">{{ $m->stock_resultante }}</td>
             <td>{{ $m->usuario->name }}</td>
-            <td class="small text-muted">{{ $m->motivo }}</td>
+            <td class="small text-muted">{{ $m->motivo }}@if($m->costo_total !== null) · costo ${{ number_format($m->costo_total, 0, ',', '.') }}@endif</td>
         </tr>
     @empty
         <tr><td colspan="8" class="text-center text-muted py-4">Sin movimientos.</td></tr>
