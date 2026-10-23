@@ -1,0 +1,11 @@
+# Uso: docker compose up --build   →   http://localhost:8000
+services:
+  app:
+    build: .
+    image: inventario-el-portal:local
+    ports:
+      - "8000:8000"
+    environment:
+      DEMO_RESET: "true"   # "false" conserva los datos entre reinicios (con el volumen de abajo)
+    # volumes:
+    #   - ./database/database.sqlite:/app/database/database.sqlite
