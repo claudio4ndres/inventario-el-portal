@@ -26,7 +26,7 @@
 
 <div class="card"><div class="table-responsive">
 <table class="table table-hover mb-0">
-    <thead class="table-light"><tr><th>Vencimiento</th><th>Días restantes</th><th>Producto</th><th>Lote</th><th class="text-end">Saldo</th><th class="text-end">Costo unitario</th><th class="text-end">Valor en riesgo</th></tr></thead>
+    <thead class="table-light"><tr><th>Vencimiento</th><th>Días restantes</th><th>Producto</th><th>Lote</th><th class="text-end">Saldo</th><th class="text-end">Costo unitario</th><th class="text-end">Valor en riesgo</th><th></th></tr></thead>
     <tbody>
     @forelse($lotes as $lote)
         @php($restantes = $lote->diasRestantes())
@@ -46,12 +46,13 @@
             <td class="text-end fw-bold">{{ $lote->cantidad_disponible }}</td>
             <td class="text-end">${{ number_format($lote->costo_unitario, 0, ',', '.') }}</td>
             <td class="text-end">${{ number_format($lote->valorEnRiesgo(), 0, ',', '.') }}</td>
+            <td><a class="btn btn-sm btn-outline-danger text-nowrap" href="{{ route('mermas.create', ['lote_id' => $lote->id]) }}" title="Registrar merma"><i class="bi bi-trash3"></i> Merma</a></td>
         </tr>
     @empty
-        <tr><td colspan="7" class="text-center text-success py-4"><i class="bi bi-check-circle"></i> No hay lotes que venzan en los próximos {{ $dias }} días.</td></tr>
+        <tr><td colspan="8" class="text-center text-success py-4"><i class="bi bi-check-circle"></i> No hay lotes que venzan en los próximos {{ $dias }} días.</td></tr>
     @endforelse
     </tbody>
 </table>
 </div></div>
-<p class="form-text mt-2">Los productos no perecibles (sin fecha de vencimiento) no aparecen en esta lista. El registro de mermas se incorpora en la HU13.</p>
+<p class="form-text mt-2">Los productos no perecibles (sin fecha de vencimiento) no aparecen en esta lista. Use «Merma» para dar de baja las unidades vencidas o dañadas de un lote.</p>
 @endsection

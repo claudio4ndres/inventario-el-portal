@@ -54,5 +54,16 @@ return [
         'razon_social' => 'razón social',
         'telefono' => 'teléfono',
         'dias' => 'días',
+        'lote_id' => 'lote',
+        'cantidad' => 'cantidad',
+        'motivo_merma' => 'motivo',
+        'observacion' => 'observación',
+    ],
+
+    // HU13: la cantidad de una merma no puede superar el saldo del lote
+    'custom' => [
+        'cantidad' => [
+            'max' => 'La cantidad no puede superar el saldo del lote (:max unidades).',
+        ],
     ],
 ];
