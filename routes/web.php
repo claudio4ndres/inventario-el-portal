@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LoteController;
+use App\Http\Controllers\MermaController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\ProductoController;
@@ -55,7 +56,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
     });
 
-    // HU03: recepción, HU06: alertas y HU12: lotes por vencer -> administrador y bodeguero
+    // HU03: recepción, HU06: alertas, HU12: lotes por vencer y HU13: mermas -> administrador y bodeguero
     Route::middleware('rol:administrador,bodeguero')->group(function () {
         Route::get('/recepciones', [RecepcionController::class, 'index'])->name('recepciones.index');
         Route::get('/recepciones/crear', [RecepcionController::class, 'create'])->name('recepciones.create');
@@ -63,6 +64,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/alertas', [AlertaController::class, 'index'])->name('alertas.index');
         Route::get('/lotes/por-vencer', [LoteController::class, 'porVencer'])->name('lotes.por-vencer');
+
+        // HU13: registro de mermas
+        Route::get('/mermas', [MermaController::class, 'index'])->name('mermas.index');
+        Route::get('/mermas/crear', [MermaController::class, 'create'])->name('mermas.create');
+        Route::post('/mermas', [MermaController::class, 'store'])->name('mermas.store');
     });
 
     // HU04: ventas -> administrador y vendedor
