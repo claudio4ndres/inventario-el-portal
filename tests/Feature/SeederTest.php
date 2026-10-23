@@ -30,5 +30,8 @@ class SeederTest extends TestCase
         $porVencer = Lote::porVencer(7)->get();
         $this->assertGreaterThan(1, $porVencer->count());
         $this->assertTrue($porVencer->contains(fn (Lote $l) => $l->estaVencido()));
+
+        // HU13: hay una merma de ejemplo con su costo
+        $this->assertDatabaseHas('movimientos', ['tipo' => 'MERMA', 'motivo_merma' => 'dano', 'cantidad' => 1, 'costo_total' => 1500]);
     }
 }

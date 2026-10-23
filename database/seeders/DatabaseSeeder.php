@@ -68,5 +68,9 @@ class DatabaseSeeder extends Seeder
             ['producto_id' => $huevos->id, 'cantidad' => 3],
             ['producto_id' => $panMolde->id, 'cantidad' => 2],
         ], 'debito');
+
+        // HU13: una merma de ejemplo (un pan de molde con el envase roto)
+        $loteDanado = $panMolde->lotes()->where('codigo_lote', 'PM-1019')->firstOrFail();
+        $inventario->registrarMerma($bodeguero, $loteDanado->id, 1, 'dano', 'Envase roto al reponer la góndola');
     }
 }
