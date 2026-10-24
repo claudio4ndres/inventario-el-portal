@@ -20,7 +20,7 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 | 9 | HU09 | Gestionar proveedores | Should | — | hecha |
 | 10 | HU12 | Alertas de lotes por vencer (FEFO) | Should | HU03 | hecha |
 | 11 | HU13 | Registrar mermas con cantidad, costo y motivo | Should | HU03 | hecha |
-| 12 | HU10 | Calcular punto de reorden automáticamente | Should | HU04 | pendiente |
+| 12 | HU10 | Calcular punto de reorden automáticamente | Should | HU04 | hecha |
 | 13 | HU11 | Orden de compra sugerida y recepción contra OC | Should | HU09, HU10 | pendiente |
 | 14 | HU14 | Conteo cíclico por clase ABC y ajustes | Should | HU07 | pendiente |
 | 15 | HU15 | Tablero con al menos 4 indicadores | Should | HU13, HU14 | pendiente |
@@ -94,3 +94,4 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - 21-10-2026: HU09 (gestionar proveedores con RUT validado por módulo 11) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (70 pruebas en total; 21 nuevas). Sin cambios de esquema.
 - 22-10-2026: HU12 (alertas de lotes por vencer, orden FEFO, ventana configurable de 7 días por defecto) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (79 pruebas en total; 9 nuevas). Sin cambios de esquema.
 - 23-10-2026: HU13 (registro de mermas por lote con cantidad, costo y motivo) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (90 pruebas en total; 11 nuevas). Nueva migración: `movimientos.costo_total` y `movimientos.motivo_merma`.
+- 24-10-2026: HU10 (punto de reorden calculado con la demanda de 28 días, días de reposición y stock de seguridad; comando `inventario:recalcular-reorden` programado a diario y botón "Recalcular") integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (100 pruebas en total; 10 nuevas). Nueva migración: `productos.dias_reposicion` y `productos.stock_seguridad`.

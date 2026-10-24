@@ -37,7 +37,9 @@ erDiagram
         string codigo_barras UK
         string nombre
         int precio_venta "CLP con IVA"
-        int punto_reorden
+        int punto_reorden "calculado en HU10"
+        int dias_reposicion "HU10"
+        int stock_seguridad "HU10"
         char clase_abc "A|B|C"
         bool activo
     }
@@ -113,6 +115,8 @@ erDiagram
 | productos | codigo_barras | varchar(32) | UNIQUE, NOT NULL | Código EAN leído por el escáner |
 | productos | precio_venta | int unsigned | > 0 | Precio con IVA incluido (Ley 19.496) |
 | productos | punto_reorden | int unsigned | ≥ 0 | Umbral de la alerta K3 |
+| productos | dias_reposicion | smallint unsigned | ≥ 1, por defecto 3 | Días que tarda el proveedor en reponer (HU10) |
+| productos | stock_seguridad | int unsigned | ≥ 0, por defecto 0 | Unidades extra ante atrasos o alzas de demanda (HU10) |
 | productos | clase_abc | char(1) | A, B o C | Prioridad de control |
 | lotes | fecha_vencimiento | date | NULL permitido | NULL indica un producto no perecible |
 | lotes | cantidad_disponible | int unsigned | ≥ 0 | Saldo del lote; la suma de todos los lotes es el stock |
@@ -131,6 +135,8 @@ erDiagram
 El modelo del MPV no requiere cambios para soportarlas; solo se agregan tablas.
 
 **Implementado (HU13):** las mermas se registran en `movimientos` con `tipo = MERMA`. La migración `2026_10_23_000001` agrega `costo_total` (se copia al registrar, igual que el precio en `detalle_ventas`, para que el historial no cambie) y `motivo_merma`, con un índice `(tipo, motivo_merma)` para el indicador de merma por vencimiento.
+
+**Implementado (HU10):** la migración `2026_10_24_000001` agrega `productos.dias_reposicion` y `productos.stock_seguridad`. El punto de reorden se recalcula como `ceil(ventas de 28 días × días de reposición ÷ 28) + stock de seguridad`, solo para los productos con ventas en el período; el resultado se guarda en `punto_reorden` porque es un parámetro (se ajusta una vez al día), no un saldo como el stock.
 
 ## Imágenes
 
