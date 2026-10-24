@@ -101,6 +101,10 @@ class ProductoController extends Controller
             'nombre' => ['required', 'string', 'max:120'],
             'precio_venta' => ['required', 'integer', 'min:1', 'max:10000000'],
             'punto_reorden' => ['required', 'integer', 'min:0', 'max:100000'],
+            // HU10: parámetros de la fórmula del punto de reorden. "sometimes": si el formulario
+            // no los envía, se conserva el valor guardado (o el valor por defecto al crear).
+            'dias_reposicion' => ['sometimes', 'required', 'integer', 'min:1', 'max:365'],
+            'stock_seguridad' => ['sometimes', 'required', 'integer', 'min:0', 'max:100000'],
             'clase_abc' => ['required', Rule::in(['A', 'B', 'C'])],
         ]);
         $datos['activo'] = $request->boolean('activo', true);
