@@ -4,7 +4,14 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Productos</h1>
     @if(auth()->user()->tieneRol('administrador'))
-        <a class="btn btn-success" href="{{ route('productos.create') }}"><i class="bi bi-plus-lg"></i> Nuevo producto</a>
+        <div class="d-flex gap-2">
+            {{-- HU10: recalcula el punto de reorden con las ventas de los últimos 28 días --}}
+            <form method="POST" action="{{ route('productos.recalcular-reorden') }}">@csrf
+                <button class="btn btn-outline-success" title="Recalcula el punto de reorden de los productos con ventas en los últimos 28 días">
+                    <i class="bi bi-arrow-repeat"></i> Recalcular punto de reorden</button>
+            </form>
+            <a class="btn btn-success" href="{{ route('productos.create') }}"><i class="bi bi-plus-lg"></i> Nuevo producto</a>
+        </div>
     @endif
 </div>
 <form class="mb-3" method="GET">

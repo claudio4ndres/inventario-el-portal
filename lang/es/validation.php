@@ -32,6 +32,8 @@ return [
         'nombre' => 'nombre',
         'precio_venta' => 'precio de venta',
         'punto_reorden' => 'punto de reorden',
+        'dias_reposicion' => 'días de reposición',
+        'stock_seguridad' => 'stock de seguridad',
         'clase_abc' => 'clase ABC',
         'proveedor_id' => 'proveedor',
         'numero_documento' => 'N.º de documento',
