@@ -19,6 +19,8 @@ class ProductoFactory extends Factory
             'nombre' => ucfirst(fake()->words(2, true)),
             'precio_venta' => fake()->numberBetween(300, 5000),
             'punto_reorden' => 5,
+            'dias_reposicion' => 3,
+            'stock_seguridad' => 0,
             'clase_abc' => 'C',
             'activo' => true,
         ];

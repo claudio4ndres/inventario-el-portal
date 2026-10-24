@@ -8,6 +8,7 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\PuntoReordenController;
 use App\Http\Controllers\RecepcionController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
@@ -27,13 +28,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
 
-    // HU02: mantenedor de productos, HU07: bitácora, HU08: usuarios y HU09: proveedores -> solo administrador
+    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios y HU09: proveedores -> solo administrador
     Route::middleware('rol:administrador')->group(function () {
         Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
         Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
         Route::get('/productos/{producto}/editar', [ProductoController::class, 'edit'])->name('productos.edit');
         Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
         Route::patch('/productos/{producto}/estado', [ProductoController::class, 'toggle'])->name('productos.toggle');
+
+        // HU10: botón "Recalcular" del punto de reorden
+        Route::post('/productos/recalcular-reorden', PuntoReordenController::class)->name('productos.recalcular-reorden');
 
         Route::get('/movimientos', [MovimientoController::class, 'index'])->name('movimientos.index');
 

@@ -31,7 +31,7 @@
             <label class="form-label" for="punto_reorden">Punto de reorden (unidades)</label>
             <input class="form-control @error('punto_reorden') is-invalid @enderror" type="number" min="0" id="punto_reorden" name="punto_reorden"
                    value="{{ old('punto_reorden', $producto->punto_reorden ?? 0) }}" required>
-            <div class="form-text">Al llegar a este stock se genera una alerta de reposición.</div>
+            <div class="form-text">Al llegar a este stock se genera una alerta de reposición. Se recalcula con las ventas (ver abajo).</div>
             @error('punto_reorden')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
         <div class="col-md-4">
@@ -41,6 +41,23 @@
                     <option value="{{ $valor }}" @selected(old('clase_abc', $producto->clase_abc) === $valor)>{{ $texto }}</option>
                 @endforeach
             </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="dias_reposicion">Días de reposición</label>
+            <input class="form-control @error('dias_reposicion') is-invalid @enderror" type="number" min="1" max="365" id="dias_reposicion" name="dias_reposicion"
+                   value="{{ old('dias_reposicion', $producto->dias_reposicion ?? 3) }}" required>
+            <div class="form-text">Días que tarda el proveedor en reponer el producto.</div>
+            @error('dias_reposicion')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="stock_seguridad">Stock de seguridad (unidades)</label>
+            <input class="form-control @error('stock_seguridad') is-invalid @enderror" type="number" min="0" id="stock_seguridad" name="stock_seguridad"
+                   value="{{ old('stock_seguridad', $producto->stock_seguridad ?? 0) }}" required>
+            <div class="form-text">Margen extra ante atrasos o alzas de demanda.</div>
+            @error('stock_seguridad')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <div class="form-text mb-2"><i class="bi bi-calculator"></i> Punto de reorden = (ventas de los últimos 28 días ÷ 28) × días de reposición + stock de seguridad.</div>
         </div>
         <div class="col-12">
             <input type="hidden" name="activo" value="0">
