@@ -41,6 +41,11 @@ class DatabaseSeeder extends Seeder
         $azucar = $p('7801555000202', 'Azúcar 1 kg', 1290, 6, 'C');
         $p('7801234567892', 'Cecina jamón 250 g', 2490, 4, 'C');   // sin stock -> aparece en alertas
 
+        // HU10: parámetros de reposición de ejemplo (el lácteo llega cada 2 días; el abarrote, semanal)
+        $leche->update(['dias_reposicion' => 2, 'stock_seguridad' => 10]);
+        $huevos->update(['dias_reposicion' => 3, 'stock_seguridad' => 5]);
+        $arroz->update(['dias_reposicion' => 7, 'stock_seguridad' => 4]);
+
         $inventario->registrarRecepcion($bodeguero, ['proveedor_id' => $lacteos->id, 'numero_documento' => 'F-10234'], [
             ['producto_id' => $leche->id, 'cantidad' => 10, 'codigo_lote' => 'LE-2611A', 'fecha_vencimiento' => now()->addDays(4)->toDateString(), 'costo_unitario' => 850],
             ['producto_id' => $leche->id, 'cantidad' => 24, 'codigo_lote' => 'LE-2611B', 'fecha_vencimiento' => now()->addDays(20)->toDateString(), 'costo_unitario' => 850],
