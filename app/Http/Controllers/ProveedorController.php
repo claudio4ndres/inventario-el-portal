@@ -69,7 +69,7 @@ class ProveedorController extends Controller
     {
         if ($proveedor->tieneHistoria()) {
             return back()->withErrors([
-                'proveedor' => "El proveedor «{$proveedor->razon_social}» tiene recepciones registradas: desactívelo en vez de eliminarlo.",
+                'proveedor' => "El proveedor «{$proveedor->razon_social}» tiene recepciones u órdenes de compra registradas: desactívelo en vez de eliminarlo.",
             ]);
         }
 

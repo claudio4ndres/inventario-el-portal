@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\OrdenCompra;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Models\User;
 use App\Services\InventarioService;
+use App\Services\OrdenCompraService;
 use Illuminate\Database\Seeder;
 
 /**
@@ -14,7 +16,7 @@ use Illuminate\Database\Seeder;
  */
 class DatabaseSeeder extends Seeder
 {
-    public function run(InventarioService $inventario): void
+    public function run(InventarioService $inventario, OrdenCompraService $compras): void
     {
         $admin = User::create(['name' => 'Administrador', 'email' => 'admin@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::ADMINISTRADOR]);
         $vendedor = User::create(['name' => 'Caja', 'email' => 'caja@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::VENDEDOR]);
@@ -77,5 +79,11 @@ class DatabaseSeeder extends Seeder
         // HU13: una merma de ejemplo (un pan de molde con el envase roto)
         $loteDanado = $panMolde->lotes()->where('codigo_lote', 'PM-1019')->firstOrFail();
         $inventario->registrarMerma($bodeguero, $loteDanado->id, 1, 'dano', 'Envase roto al reponer la góndola');
+
+        // HU11: órdenes de compra sugeridas (una por proveedor); la del mayorista queda enviada
+        // para probar la recepción contra OC. La cecina no tiene proveedor y no se incluye.
+        $compras->generarSugeridas($admin)
+            ->firstWhere('proveedor_id', $abarrotes->id)
+            ?->update(['estado' => OrdenCompra::ENVIADA, 'fecha_envio' => now()]);
     }
 }
