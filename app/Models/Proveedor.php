@@ -24,9 +24,14 @@ class Proveedor extends Model
         return $this->hasMany(Recepcion::class);
     }
 
-    /** HU09: un proveedor con recepciones no se elimina, se desactiva. */
+    public function ordenesCompra(): HasMany
+    {
+        return $this->hasMany(OrdenCompra::class);
+    }
+
+    /** HU09/HU11: un proveedor con recepciones u órdenes de compra no se elimina, se desactiva. */
     public function tieneHistoria(): bool
     {
-        return $this->recepciones()->exists();
+        return $this->recepciones()->exists() || $this->ordenesCompra()->exists();
     }
 }

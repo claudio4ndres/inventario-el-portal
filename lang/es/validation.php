@@ -60,12 +60,19 @@ return [
         'cantidad' => 'cantidad',
         'motivo_merma' => 'motivo',
         'observacion' => 'observación',
+        'orden_compra_id' => 'orden de compra',
+        'detalles' => 'productos de la orden de compra',
+        'detalles.*.cantidad' => 'cantidad pedida',
     ],
 
     // HU13: la cantidad de una merma no puede superar el saldo del lote
     'custom' => [
         'cantidad' => [
             'max' => 'La cantidad no puede superar el saldo del lote (:max unidades).',
+        ],
+        // HU11: solo se recibe contra una OC enviada del mismo proveedor
+        'orden_compra_id' => [
+            'exists' => 'La orden de compra debe estar enviada y ser del proveedor seleccionado.',
         ],
     ],
 ];

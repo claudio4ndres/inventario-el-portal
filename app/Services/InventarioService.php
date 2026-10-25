@@ -7,6 +7,7 @@ use App\Exceptions\StockInsuficienteException;
 use App\Models\DetalleVenta;
 use App\Models\Lote;
 use App\Models\Movimiento;
+use App\Models\OrdenCompra;
 use App\Models\Producto;
 use App\Models\Recepcion;
 use App\Models\User;
@@ -26,14 +27,29 @@ class InventarioService
     /**
      * HU03 / K2: registra una recepción. Cada línea crea un lote y un movimiento ENTRADA.
      *
-     * @param  array{proveedor_id:int, numero_documento:string}  $cabecera
+     * HU11: si la recepción se asocia a una orden de compra, la OC debe estar enviada y ser
+     * del mismo proveedor; al registrar la recepción la OC pasa a "recibida".
+     *
+     * @param  array{proveedor_id:int, numero_documento:string, orden_compra_id?:?int}  $cabecera
      * @param  array<int, array{producto_id:int, cantidad:int, codigo_lote:string, fecha_vencimiento:?string, costo_unitario:?int}>  $lineas
+     *
+     * @throws InvalidArgumentException si la OC no está enviada o es de otro proveedor (no se registra nada)
      */
     public function registrarRecepcion(User $usuario, array $cabecera, array $lineas): Recepcion
     {
         return DB::transaction(function () use ($usuario, $cabecera, $lineas) {
+            $orden = null;
+            if (! empty($cabecera['orden_compra_id'])) {
+                // lockForUpdate: dos recepciones simultáneas no pueden cerrar la misma OC
+                $orden = OrdenCompra::query()->lockForUpdate()->findOrFail($cabecera['orden_compra_id']);
+                if ($orden->estado !== OrdenCompra::ENVIADA || (int) $orden->proveedor_id !== (int) $cabecera['proveedor_id']) {
+                    throw new InvalidArgumentException("La orden de compra N.º {$orden->id} debe estar enviada y ser del mismo proveedor.");
+                }
+            }
+
             $recepcion = Recepcion::create([
                 'proveedor_id' => $cabecera['proveedor_id'],
+                'orden_compra_id' => $orden?->id,
                 'user_id' => $usuario->id,
                 'numero_documento' => $cabecera['numero_documento'],
                 'fecha_recepcion' => now(),
@@ -61,6 +77,8 @@ class InventarioService
                     'motivo' => 'Recepción doc. '.$recepcion->numero_documento,
                 ]);
             }
+
+            $orden?->update(['estado' => OrdenCompra::RECIBIDA, 'fecha_recepcion' => now()]);
 
             return $recepcion;
         });

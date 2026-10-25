@@ -52,11 +52,17 @@ class User extends Authenticatable
         return $this->hasMany(Recepcion::class, 'user_id');
     }
 
+    public function ordenesCompra(): HasMany
+    {
+        return $this->hasMany(OrdenCompra::class, 'user_id');
+    }
+
     /** HU08: un usuario con historia no se elimina, se desactiva (FK con RESTRICT). */
     public function tieneHistoria(): bool
     {
         return $this->movimientos()->exists()
             || $this->ventas()->exists()
-            || $this->recepciones()->exists();
+            || $this->recepciones()->exists()
+            || $this->ordenesCompra()->exists();   // HU11
     }
 }

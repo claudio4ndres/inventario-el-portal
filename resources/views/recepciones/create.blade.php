@@ -6,12 +6,26 @@
 @csrf
 <div class="card p-4 mb-3">
     <div class="row g-3">
+        @if($ordenes->isNotEmpty())
+        <div class="col-12">
+            {{-- HU11: al elegir una OC enviada se recarga el formulario con su proveedor y sus productos --}}
+            <label class="form-label" for="orden_compra_id">Orden de compra (opcional)</label>
+            <select class="form-select" id="orden_compra_id" name="orden_compra_id"
+                    onchange="window.location = '{{ route('recepciones.create') }}' + (this.value ? '?orden_compra_id=' + this.value : '')">
+                <option value="">Sin orden de compra</option>
+                @foreach($ordenes as $oc)
+                    <option value="{{ $oc->id }}" @selected(old('orden_compra_id', $orden?->id) == $oc->id)>OC N.º {{ $oc->id }} · {{ $oc->proveedor->razon_social }}</option>
+                @endforeach
+            </select>
+            <div class="form-text">Al registrar, la orden queda recibida y se muestran las diferencias entre lo pedido y lo recibido.</div>
+        </div>
+        @endif
         <div class="col-md-6">
             <label class="form-label" for="proveedor_id">Proveedor</label>
             <select class="form-select" id="proveedor_id" name="proveedor_id" required>
                 <option value="">Seleccione…</option>
                 @foreach($proveedores as $prov)
-                    <option value="{{ $prov->id }}" @selected(old('proveedor_id') == $prov->id)>{{ $prov->razon_social }} ({{ $prov->rut }})</option>
+                    <option value="{{ $prov->id }}" @selected(old('proveedor_id', $orden?->proveedor_id) == $prov->id)>{{ $prov->razon_social }} ({{ $prov->rut }})</option>
                 @endforeach
             </select>
         </div>
@@ -31,7 +45,7 @@
     <table class="table" id="tabla-lineas">
         <thead><tr><th style="min-width:220px">Producto</th><th>Cantidad</th><th>Lote</th><th>Vencimiento</th><th>Costo unit.</th><th></th></tr></thead>
         <tbody>
-        @foreach(old('lineas', [[]]) as $i => $linea)
+        @foreach(old('lineas', $lineasIniciales) as $i => $linea)
             <tr>
                 <td><select class="form-select" name="lineas[{{ $i }}][producto_id]" required>
                     <option value="">Seleccione…</option>

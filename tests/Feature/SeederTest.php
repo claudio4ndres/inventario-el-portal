@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Lote;
+use App\Models\OrdenCompra;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Support\Rut;
@@ -33,5 +34,12 @@ class SeederTest extends TestCase
 
         // HU13: hay una merma de ejemplo con su costo
         $this->assertDatabaseHas('movimientos', ['tipo' => 'MERMA', 'motivo_merma' => 'dano', 'cantidad' => 1, 'costo_total' => 1500]);
+
+        // HU11: una OC sugerida por proveedor con productos en alerta; la del mayorista está enviada
+        $this->assertSame(3, OrdenCompra::count());
+        $enviada = OrdenCompra::where('estado', OrdenCompra::ENVIADA)->sole();
+        $this->assertSame('Mayorista Abarrotes Central', $enviada->proveedor->razon_social);
+        $this->assertEqualsCanonicalizing([7, 10], $enviada->detalles()->pluck('cantidad')->all());   // huevos 6×2−5, fideos 8×2−6
+        $this->assertSame(2, OrdenCompra::where('estado', OrdenCompra::BORRADOR)->count());
     }
 }
