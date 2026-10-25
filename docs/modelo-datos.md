@@ -23,6 +23,11 @@ erDiagram
     PRODUCTOS ||--o{ MOVIMIENTOS : registra
     DETALLE_VENTAS |o--o{ MOVIMIENTOS : "genera (SALIDA)"
     RECEPCIONES |o--o{ MOVIMIENTOS : "genera (ENTRADA)"
+    PROVEEDORES ||--o{ ORDENES_COMPRA : recibe
+    USERS ||--o{ ORDENES_COMPRA : genera
+    ORDENES_COMPRA ||--|{ DETALLE_ORDENES_COMPRA : contiene
+    PRODUCTOS ||--o{ DETALLE_ORDENES_COMPRA : "se pide en"
+    ORDENES_COMPRA |o--o{ RECEPCIONES : "se recibe en"
 
     USERS {
         bigint id PK
@@ -54,9 +59,25 @@ erDiagram
     RECEPCIONES {
         bigint id PK
         bigint proveedor_id FK
+        bigint orden_compra_id FK "nullable (HU11)"
         bigint user_id FK
         string numero_documento
         timestamp fecha_recepcion
+    }
+    ORDENES_COMPRA {
+        bigint id PK
+        bigint proveedor_id FK
+        bigint user_id FK
+        string estado "borrador|enviada|recibida"
+        timestamp fecha_envio "nullable"
+        timestamp fecha_recepcion "nullable"
+    }
+    DETALLE_ORDENES_COMPRA {
+        bigint id PK
+        bigint orden_compra_id FK
+        bigint producto_id FK
+        int cantidad_sugerida "PR × 2 − stock"
+        int cantidad "pedida, editable en borrador"
     }
     LOTES {
         bigint id PK
@@ -125,11 +146,14 @@ erDiagram
 | movimientos | costo_total | int unsigned | NULL permitido | Solo en MERMA: cantidad × costo unitario del lote, copiado al registrar (HU13) |
 | movimientos | motivo_merma | varchar(20) | vencimiento, dano, robo u otro; NULL si no es merma | Causa de la merma, base del indicador M3 (HU13, HU15) |
 | proveedores | rut | varchar(12) | UNIQUE, NOT NULL | RUT con dígito verificador válido (módulo 11), guardado normalizado como `76.111.111-6` (HU09) |
+| ordenes_compra | estado | varchar(10) | borrador, enviada o recibida | Ciclo de vida de la OC (HU11) |
+| detalle_ordenes_compra | cantidad_sugerida | int unsigned | ≥ 1 | Punto de reorden × 2 − stock al generar la OC; se conserva aunque se edite la cantidad (HU11) |
+| detalle_ordenes_compra | cantidad | int unsigned | ≥ 1; UNIQUE (orden_compra_id, producto_id) | Cantidad pedida al proveedor (HU11) |
+| recepciones | orden_compra_id | bigint | FK RESTRICT, NULL permitido | OC enviada contra la que se recibió la mercadería (HU11) |
 | users | rol | varchar(20) | administrador, vendedor o bodeguero | Permisos (K8) |
 
 ## Extensiones previstas después del MPV
 
-- **HU11:** `ordenes_compra` y `detalle_ordenes_compra`.
 - **HU14:** `conteos` y `detalle_conteos`.
 
 El modelo del MPV no requiere cambios para soportarlas; solo se agregan tablas.
@@ -137,6 +161,8 @@ El modelo del MPV no requiere cambios para soportarlas; solo se agregan tablas.
 **Implementado (HU13):** las mermas se registran en `movimientos` con `tipo = MERMA`. La migración `2026_10_23_000001` agrega `costo_total` (se copia al registrar, igual que el precio en `detalle_ventas`, para que el historial no cambie) y `motivo_merma`, con un índice `(tipo, motivo_merma)` para el indicador de merma por vencimiento.
 
 **Implementado (HU10):** la migración `2026_10_24_000001` agrega `productos.dias_reposicion` y `productos.stock_seguridad`. El punto de reorden se recalcula como `ceil(ventas de 28 días × días de reposición ÷ 28) + stock de seguridad`, solo para los productos con ventas en el período; el resultado se guarda en `punto_reorden` porque es un parámetro (se ajusta una vez al día), no un saldo como el stock.
+
+**Implementado (HU11):** la migración `2026_10_25_000001` crea `ordenes_compra` y `detalle_ordenes_compra` (entidad de intersección M:N entre órdenes y productos) y agrega `recepciones.orden_compra_id`. El proveedor sugerido es el de la recepción más reciente del producto, por lo que no se necesita una tabla producto-proveedor. Las diferencias de cantidad no se guardan: se calculan comparando `detalle_ordenes_compra.cantidad` con la suma de `lotes.cantidad_inicial` de las recepciones asociadas.
 
 ## Imágenes
 
