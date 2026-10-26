@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Exceptions\SaldoLoteInsuficienteException;
 use App\Exceptions\StockInsuficienteException;
+use App\Models\Conteo;
+use App\Models\DetalleConteo;
 use App\Models\DetalleVenta;
 use App\Models\Lote;
 use App\Models\Movimiento;
@@ -14,6 +16,7 @@ use App\Models\User;
 use App\Models\Venta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 /**
@@ -214,6 +217,131 @@ class InventarioService
                 'motivo_merma' => $motivo,
                 'motivo' => Str::limit($detalle, 117),   // la columna admite 120 caracteres
             ]);
+        });
+    }
+
+    /**
+     * HU14 / K6: registra el conteo físico de productos de una clase ABC y ajusta las diferencias.
+     *
+     * Para cada producto compara lo contado con el stock del sistema (suma de sus lotes):
+     * - faltante (diferencia < 0): descuenta de los lotes en orden FEFO, como una venta;
+     * - sobrante (diferencia > 0): suma al lote ingresado más recientemente.
+     * Cada lote afectado deja un movimiento AJUSTE con el motivo indicado. Todo ocurre en una
+     * transacción: si una línea es inválida no se registra ni el conteo ni ningún ajuste.
+     *
+     * @param  array<int, array{cantidad:int, motivo?:?string}>  $lineas  producto_id => conteo físico
+     *
+     * @throws ValidationException si falta el motivo de una diferencia, un producto no es de la clase
+     *                             o hay un sobrante en un producto sin lotes (no se registra nada)
+     */
+    public function registrarConteo(User $usuario, string $clase, array $lineas): Conteo
+    {
+        if (! array_key_exists($clase, Conteo::FRECUENCIA_DIAS)) {
+            throw ValidationException::withMessages(['clase_abc' => "Clase ABC no válida: {$clase}."]);
+        }
+        if ($lineas === []) {
+            throw ValidationException::withMessages(['conteos' => 'Debe contar al menos un producto.']);
+        }
+
+        return DB::transaction(function () use ($usuario, $clase, $lineas) {
+            $conteo = Conteo::create([
+                'clase_abc' => $clase,
+                'user_id' => $usuario->id,
+                'fecha_conteo' => now(),
+            ]);
+
+            $conDiferencia = 0;
+
+            foreach ($lineas as $productoId => $linea) {
+                $productoId = (int) $productoId;
+                $producto = Producto::query()->where('activo', true)->where('clase_abc', $clase)->find($productoId);
+                if ($producto === null) {
+                    throw ValidationException::withMessages([
+                        "conteos.{$productoId}.cantidad" => "El producto N.º {$productoId} no es un producto activo de la clase {$clase}.",
+                    ]);
+                }
+
+                // lockForUpdate: ninguna venta o merma puede mover estos lotes mientras se ajustan
+                $lotes = Lote::query()
+                    ->where('producto_id', $productoId)
+                    ->orderByRaw('fecha_vencimiento IS NULL')   // FEFO: no perecibles al final
+                    ->orderBy('fecha_vencimiento')
+                    ->orderBy('id')
+                    ->lockForUpdate()
+                    ->get();
+
+                $stockSistema = (int) $lotes->sum('cantidad_disponible');
+                $contada = (int) $linea['cantidad'];
+                $diferencia = $contada - $stockSistema;
+                $motivo = trim((string) ($linea['motivo'] ?? ''));
+
+                if ($diferencia !== 0 && $motivo === '') {
+                    throw ValidationException::withMessages([
+                        "conteos.{$productoId}.motivo" => "Indique el motivo de la diferencia en «{$producto->nombre}» (sistema {$stockSistema}, contado {$contada}).",
+                    ]);
+                }
+                if ($diferencia > 0 && $lotes->isEmpty()) {
+                    throw ValidationException::withMessages([
+                        "conteos.{$productoId}.cantidad" => "«{$producto->nombre}» no tiene lotes: registre primero una recepción para ingresar ese stock.",
+                    ]);
+                }
+
+                $detalle = DetalleConteo::create([
+                    'conteo_id' => $conteo->id,
+                    'producto_id' => $productoId,
+                    'stock_sistema' => $stockSistema,
+                    'cantidad_contada' => $contada,
+                    'diferencia' => $diferencia,
+                    'motivo' => $diferencia !== 0 ? $motivo : null,
+                ]);
+
+                if ($diferencia === 0) {
+                    continue;
+                }
+                $conDiferencia++;
+
+                $texto = Str::limit(sprintf('Ajuste conteo N.º %d (%s%d): %s', $conteo->id, $diferencia > 0 ? '+' : '−', abs($diferencia), $motivo), 117);
+                $ajuste = fn (Lote $lote, int $cantidad, int $stockResultante) => Movimiento::create([
+                    'producto_id' => $productoId,
+                    'lote_id' => $lote->id,
+                    'user_id' => $usuario->id,
+                    'tipo' => Movimiento::AJUSTE,
+                    'cantidad' => $cantidad,
+                    'stock_resultante' => $stockResultante,
+                    'detalle_conteo_id' => $detalle->id,
+                    'motivo' => $texto,
+                ]);
+
+                if ($diferencia > 0) {
+                    // Sobrante: se suma al lote más reciente, que es el que probablemente quedó mal recibido
+                    $lote = $lotes->sortByDesc('id')->first();
+                    $lote->increment('cantidad_disponible', $diferencia);
+                    $ajuste($lote, $diferencia, $contada);
+
+                    continue;
+                }
+
+                // Faltante: se descuenta lote por lote en orden FEFO; el stock nunca queda negativo
+                $pendiente = -$diferencia;
+                $stockRestante = $stockSistema;
+                foreach ($lotes->where('cantidad_disponible', '>', 0) as $lote) {
+                    if ($pendiente === 0) {
+                        break;
+                    }
+                    $tomar = min($pendiente, $lote->cantidad_disponible);
+                    $lote->decrement('cantidad_disponible', $tomar);
+                    $pendiente -= $tomar;
+                    $stockRestante -= $tomar;
+                    $ajuste($lote, $tomar, $stockRestante);
+                }
+            }
+
+            $conteo->update([
+                'productos_contados' => count($lineas),
+                'productos_con_diferencia' => $conDiferencia,
+            ]);
+
+            return $conteo;
         });
     }
 

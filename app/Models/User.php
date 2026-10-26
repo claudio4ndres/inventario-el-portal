@@ -57,12 +57,19 @@ class User extends Authenticatable
         return $this->hasMany(OrdenCompra::class, 'user_id');
     }
 
+    /** HU14: conteos cíclicos registrados por el usuario. */
+    public function conteos(): HasMany
+    {
+        return $this->hasMany(Conteo::class, 'user_id');
+    }
+
     /** HU08: un usuario con historia no se elimina, se desactiva (FK con RESTRICT). */
     public function tieneHistoria(): bool
     {
         return $this->movimientos()->exists()
             || $this->ventas()->exists()
             || $this->recepciones()->exists()
-            || $this->ordenesCompra()->exists();   // HU11
+            || $this->ordenesCompra()->exists()    // HU11
+            || $this->conteos()->exists();         // HU14
     }
 }

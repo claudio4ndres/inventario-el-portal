@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Conteo;
 use App\Models\Lote;
 use App\Models\OrdenCompra;
 use App\Models\Producto;
@@ -41,5 +42,11 @@ class SeederTest extends TestCase
         $this->assertSame('Mayorista Abarrotes Central', $enviada->proveedor->razon_social);
         $this->assertEqualsCanonicalizing([7, 10], $enviada->detalles()->pluck('cantidad')->all());   // huevos 6×2−5, fideos 8×2−6
         $this->assertSame(2, OrdenCompra::where('estado', OrdenCompra::BORRADOR)->count());
+
+        // HU14: conteo de la clase A con una diferencia ajustada (bebida 28 → 27)
+        $conteo = Conteo::sole();
+        $this->assertSame([3, 1], [$conteo->productos_contados, $conteo->productos_con_diferencia]);
+        $this->assertSame(27, Producto::where('codigo_barras', '7801610001196')->first()->stockActual());
+        $this->assertDatabaseHas('movimientos', ['tipo' => 'AJUSTE', 'cantidad' => 1, 'stock_resultante' => 27]);
     }
 }

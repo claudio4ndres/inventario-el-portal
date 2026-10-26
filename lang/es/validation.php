@@ -63,6 +63,10 @@ return [
         'orden_compra_id' => 'orden de compra',
         'detalles' => 'productos de la orden de compra',
         'detalles.*.cantidad' => 'cantidad pedida',
+        'clase' => 'clase ABC',
+        'conteos' => 'productos contados',
+        'conteos.*.cantidad' => 'cantidad contada',
+        'conteos.*.motivo' => 'motivo de la diferencia',
     ],
 
     // HU13: la cantidad de una merma no puede superar el saldo del lote
