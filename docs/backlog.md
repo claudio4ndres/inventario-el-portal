@@ -22,7 +22,7 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 | 11 | HU13 | Registrar mermas con cantidad, costo y motivo | Should | HU03 | hecha |
 | 12 | HU10 | Calcular punto de reorden automáticamente | Should | HU04 | hecha |
 | 13 | HU11 | Orden de compra sugerida y recepción contra OC | Should | HU09, HU10 | hecha |
-| 14 | HU14 | Conteo cíclico por clase ABC y ajustes | Should | HU07 | pendiente |
+| 14 | HU14 | Conteo cíclico por clase ABC y ajustes | Should | HU07 | hecha |
 | 15 | HU15 | Tablero con al menos 4 indicadores | Should | HU13, HU14 | pendiente |
 | 16 | HU16 | Importar catálogo inicial desde CSV | Should | HU02 | pendiente |
 | 17 | HU17 | Clasificación ABC automática | Could | HU04 | pendiente |
@@ -96,3 +96,4 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - 23-10-2026: HU13 (registro de mermas por lote con cantidad, costo y motivo) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (90 pruebas en total; 11 nuevas). Nueva migración: `movimientos.costo_total` y `movimientos.motivo_merma`.
 - 24-10-2026: HU10 (punto de reorden calculado con la demanda de 28 días, días de reposición y stock de seguridad; comando `inventario:recalcular-reorden` programado a diario y botón "Recalcular") integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (100 pruebas en total; 10 nuevas). Nueva migración: `productos.dias_reposicion` y `productos.stock_seguridad`.
 - 25-10-2026: HU11 (orden de compra sugerida por proveedor desde las alertas, cantidad = punto de reorden × 2 − stock editable en borrador, estados borrador/enviada/recibida y recepción contra OC con diferencias de cantidad) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (112 pruebas en total; 12 nuevas). Nueva migración: tablas `ordenes_compra` y `detalle_ordenes_compra`, y columna `recepciones.orden_compra_id`.
+- 26-10-2026: HU14 (conteo cíclico por clase ABC: A semanal, B quincenal y C mensual; cada diferencia exige motivo y genera movimientos AJUSTE, el faltante en orden FEFO y el sobrante en el lote más reciente; exactitud por conteo y de los últimos 30 días) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (121 pruebas en total; 9 nuevas). Nueva migración: tablas `conteos` y `detalle_conteos`, y columna `movimientos.detalle_conteo_id`.

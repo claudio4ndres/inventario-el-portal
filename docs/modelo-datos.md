@@ -28,6 +28,10 @@ erDiagram
     ORDENES_COMPRA ||--|{ DETALLE_ORDENES_COMPRA : contiene
     PRODUCTOS ||--o{ DETALLE_ORDENES_COMPRA : "se pide en"
     ORDENES_COMPRA |o--o{ RECEPCIONES : "se recibe en"
+    USERS ||--o{ CONTEOS : registra
+    CONTEOS ||--|{ DETALLE_CONTEOS : contiene
+    PRODUCTOS ||--o{ DETALLE_CONTEOS : "se cuenta en"
+    DETALLE_CONTEOS |o--o{ MOVIMIENTOS : "genera (AJUSTE)"
 
     USERS {
         bigint id PK
@@ -79,6 +83,23 @@ erDiagram
         int cantidad_sugerida "PR × 2 − stock"
         int cantidad "pedida, editable en borrador"
     }
+    CONTEOS {
+        bigint id PK
+        char clase_abc "A|B|C (HU14)"
+        bigint user_id FK
+        timestamp fecha_conteo
+        int productos_contados
+        int productos_con_diferencia
+    }
+    DETALLE_CONTEOS {
+        bigint id PK
+        bigint conteo_id FK
+        bigint producto_id FK
+        int stock_sistema "copiado al contar"
+        int cantidad_contada
+        int diferencia "contada − sistema"
+        string motivo "obligatorio si hay diferencia"
+    }
     LOTES {
         bigint id PK
         bigint producto_id FK
@@ -116,6 +137,7 @@ erDiagram
         string motivo_merma "vencimiento|dano|robo|otro (HU13)"
         bigint detalle_venta_id FK "nullable"
         bigint recepcion_id FK "nullable"
+        bigint detalle_conteo_id FK "nullable, solo AJUSTE (HU14)"
         string motivo
     }
 ```
@@ -150,19 +172,23 @@ erDiagram
 | detalle_ordenes_compra | cantidad_sugerida | int unsigned | ≥ 1 | Punto de reorden × 2 − stock al generar la OC; se conserva aunque se edite la cantidad (HU11) |
 | detalle_ordenes_compra | cantidad | int unsigned | ≥ 1; UNIQUE (orden_compra_id, producto_id) | Cantidad pedida al proveedor (HU11) |
 | recepciones | orden_compra_id | bigint | FK RESTRICT, NULL permitido | OC enviada contra la que se recibió la mercadería (HU11) |
+| conteos | clase_abc | char(1) | A, B o C | Clase contada; define la frecuencia: A cada 7 días, B cada 14 y C cada 30 (HU14) |
+| detalle_conteos | stock_sistema | int unsigned | NOT NULL | Stock según los lotes al momento del conteo; se copia para que el historial no cambie (HU14) |
+| detalle_conteos | diferencia | int (con signo) | UNIQUE (conteo_id, producto_id) | Contado − sistema: negativa = faltante, positiva = sobrante (HU14) |
+| movimientos | detalle_conteo_id | bigint | FK RESTRICT, NULL permitido | Línea del conteo que originó el AJUSTE (HU14) |
 | users | rol | varchar(20) | administrador, vendedor o bodeguero | Permisos (K8) |
 
 ## Extensiones previstas después del MPV
 
-- **HU14:** `conteos` y `detalle_conteos`.
-
-El modelo del MPV no requiere cambios para soportarlas; solo se agregan tablas.
+Todas las extensiones previstas ya se implementaron (ver abajo).
 
 **Implementado (HU13):** las mermas se registran en `movimientos` con `tipo = MERMA`. La migración `2026_10_23_000001` agrega `costo_total` (se copia al registrar, igual que el precio en `detalle_ventas`, para que el historial no cambie) y `motivo_merma`, con un índice `(tipo, motivo_merma)` para el indicador de merma por vencimiento.
 
 **Implementado (HU10):** la migración `2026_10_24_000001` agrega `productos.dias_reposicion` y `productos.stock_seguridad`. El punto de reorden se recalcula como `ceil(ventas de 28 días × días de reposición ÷ 28) + stock de seguridad`, solo para los productos con ventas en el período; el resultado se guarda en `punto_reorden` porque es un parámetro (se ajusta una vez al día), no un saldo como el stock.
 
 **Implementado (HU11):** la migración `2026_10_25_000001` crea `ordenes_compra` y `detalle_ordenes_compra` (entidad de intersección M:N entre órdenes y productos) y agrega `recepciones.orden_compra_id`. El proveedor sugerido es el de la recepción más reciente del producto, por lo que no se necesita una tabla producto-proveedor. Las diferencias de cantidad no se guardan: se calculan comparando `detalle_ordenes_compra.cantidad` con la suma de `lotes.cantidad_inicial` de las recepciones asociadas.
+
+**Implementado (HU14):** la migración `2026_10_26_000001` crea `conteos` y `detalle_conteos` (entidad de intersección M:N entre conteos y productos) y agrega `movimientos.detalle_conteo_id`. La programación (A semanal, B quincenal, C mensual) no se guarda: se calcula desde la fecha del último conteo de cada clase. Cada diferencia genera movimientos AJUSTE: el faltante se descuenta en orden FEFO (como una venta) y el sobrante se suma al lote más reciente; el signo del ajuste se lee desde `detalle_conteos.diferencia`. La exactitud es 1 − productos con diferencia ÷ productos contados.
 
 ## Imágenes
 
