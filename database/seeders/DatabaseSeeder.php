@@ -85,5 +85,12 @@ class DatabaseSeeder extends Seeder
         $compras->generarSugeridas($admin)
             ->firstWhere('proveedor_id', $abarrotes->id)
             ?->update(['estado' => OrdenCompra::ENVIADA, 'fecha_envio' => now()]);
+
+        // HU14: conteo cíclico de la clase A con una diferencia (falta una bebida); B y C quedan pendientes
+        $inventario->registrarConteo($bodeguero, 'A', [
+            $leche->id => ['cantidad' => 22],
+            $huevos->id => ['cantidad' => 5],
+            $bebida->id => ['cantidad' => 27, 'motivo' => 'Venta no registrada en caja'],
+        ]);
     }
 }

@@ -34,6 +34,7 @@
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('alertas.*')) active @endif" href="{{ route('alertas.index') }}"><i class="bi bi-bell"></i> Alertas</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('lotes.*')) active @endif" href="{{ route('lotes.por-vencer') }}"><i class="bi bi-hourglass-split"></i> Por vencer</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('mermas.*')) active @endif" href="{{ route('mermas.index') }}"><i class="bi bi-trash3"></i> Mermas</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('conteos.*')) active @endif" href="{{ route('conteos.index') }}"><i class="bi bi-clipboard-data"></i> Conteos</a></li>
                 @endif
                 @if($u->tieneRol('administrador'))
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('movimientos.*')) active @endif" href="{{ route('movimientos.index') }}">Bitácora</a></li>

@@ -31,7 +31,7 @@
             <td><span class="badge bg-{{ $m->tipo === 'ENTRADA' ? 'success' : ($m->tipo === 'SALIDA' ? 'primary' : 'warning text-dark') }}">{{ $m->tipo }}</span></td>
             <td>{{ $m->producto->nombre }}</td>
             <td><code>{{ $m->lote->codigo_lote }}</code></td>
-            <td class="text-end">{{ $m->tipo === 'ENTRADA' ? '+' : '−' }}{{ $m->cantidad }}</td>
+            <td class="text-end">{{ $m->signo() }}{{ $m->cantidad }}</td>
             <td class="text-end fw-bold">{{ $m->stock_resultante }}</td>
             <td>{{ $m->usuario->name }}</td>
             <td class="small text-muted">{{ $m->motivo }}@if($m->costo_total !== null) · costo ${{ number_format($m->costo_total, 0, ',', '.') }}@endif</td>

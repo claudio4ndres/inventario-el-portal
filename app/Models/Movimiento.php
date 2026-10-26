@@ -24,7 +24,7 @@ class Movimiento extends Model
 
     protected $fillable = [
         'producto_id', 'lote_id', 'user_id', 'tipo', 'cantidad', 'stock_resultante',
-        'costo_total', 'motivo_merma', 'detalle_venta_id', 'recepcion_id', 'motivo',
+        'costo_total', 'motivo_merma', 'detalle_venta_id', 'recepcion_id', 'detalle_conteo_id', 'motivo',
     ];
 
     protected function casts(): array
@@ -36,6 +36,25 @@ class Movimiento extends Model
     public function motivoMermaEtiqueta(): ?string
     {
         return self::MOTIVOS_MERMA[$this->motivo_merma] ?? null;
+    }
+
+    /**
+     * Signo con que el movimiento afecta el stock: las entradas suman y las salidas y mermas restan.
+     * Un AJUSTE (HU14) suma si el conteo encontró más unidades que el sistema y resta si encontró menos.
+     */
+    public function signo(): string
+    {
+        return match ($this->tipo) {
+            self::ENTRADA => '+',
+            self::AJUSTE => ($this->detalleConteo?->diferencia ?? 0) > 0 ? '+' : '−',
+            default => '−',
+        };
+    }
+
+    /** HU14: línea del conteo que originó el AJUSTE. */
+    public function detalleConteo(): BelongsTo
+    {
+        return $this->belongsTo(DetalleConteo::class);
     }
 
     public function producto(): BelongsTo

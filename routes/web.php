@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ConteoController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\MermaController;
 use App\Http\Controllers\MovimientoController;
@@ -68,7 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/ordenes-compra/{orden}/enviar', [OrdenCompraController::class, 'enviar'])->name('ordenes-compra.enviar');
     });
 
-    // HU03: recepción, HU06: alertas, HU12: lotes por vencer y HU13: mermas -> administrador y bodeguero
+    // HU03: recepción, HU06: alertas, HU12: lotes por vencer, HU13: mermas y HU14: conteo cíclico -> administrador y bodeguero
     Route::middleware('rol:administrador,bodeguero')->group(function () {
         Route::get('/recepciones', [RecepcionController::class, 'index'])->name('recepciones.index');
         Route::get('/recepciones/crear', [RecepcionController::class, 'create'])->name('recepciones.create');
@@ -82,6 +83,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/mermas', [MermaController::class, 'index'])->name('mermas.index');
         Route::get('/mermas/crear', [MermaController::class, 'create'])->name('mermas.create');
         Route::post('/mermas', [MermaController::class, 'store'])->name('mermas.store');
+
+        // HU14: conteo cíclico por clase ABC (A semanal, B quincenal, C mensual) y ajustes
+        Route::get('/conteos', [ConteoController::class, 'index'])->name('conteos.index');
+        Route::get('/conteos/crear', [ConteoController::class, 'create'])->name('conteos.create');
+        Route::post('/conteos', [ConteoController::class, 'store'])->name('conteos.store');
+        Route::get('/conteos/{conteo}', [ConteoController::class, 'show'])->whereNumber('conteo')->name('conteos.show');
     });
 
     // HU04: ventas -> administrador y vendedor

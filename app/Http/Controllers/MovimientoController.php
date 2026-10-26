@@ -18,7 +18,7 @@ class MovimientoController extends Controller
             'tipo' => ['nullable', Rule::in([Movimiento::ENTRADA, Movimiento::SALIDA, Movimiento::AJUSTE, Movimiento::MERMA])],
         ]);
 
-        $movimientos = Movimiento::with(['producto', 'lote', 'usuario'])
+        $movimientos = Movimiento::with(['producto', 'lote', 'usuario', 'detalleConteo'])
             ->when($filtros['producto_id'] ?? null, fn ($q, $id) => $q->where('producto_id', $id))
             ->when($filtros['tipo'] ?? null, fn ($q, $tipo) => $q->where('tipo', $tipo))
             ->latest('id')
