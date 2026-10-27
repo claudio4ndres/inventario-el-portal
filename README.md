@@ -3,9 +3,9 @@
 Sistema web de gestión de inventario y ventas para el **almacén El Portal** (Valle Grande, Lampa).
 Proyecto de título de Ingeniería en Computación e Informática — Claudio Figueroa Arias, 2026.
 
-**Estado:** MPV (Mínimo Producto Viable): versión `v0.1.0-mpv`, que corresponde al hito H2 del plan de proyecto.
+**Estado:** `main` contiene el prototipo aprobado en el hito H2 (HU01–HU07, línea base LB-2). `develop` ya integra HU01–HU14; las HU15–HU17 completan el MPV del hito H4. El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
 
-## Alcance del MPV
+## Alcance construido
 
 | HU | Funcionalidad | Control |
 |----|---------------|---------|
@@ -16,6 +16,15 @@ Proyecto de título de Ingeniería en Computación e Informática — Claudio Fi
 | HU05 | Búsqueda por código de barras (lector USB) | K5 |
 | HU06 | Alertas de productos en o bajo su punto de reorden | K3 |
 | HU07 | Bitácora de movimientos (entradas y salidas con usuario y stock resultante) | K8 |
+| HU08 | Gestión de usuarios y roles, con activación y desactivación | K8 |
+| HU09 | Gestión de proveedores con RUT validado (módulo 11) | K2 |
+| HU10 | Punto de reorden calculado con la demanda de 28 días | K3 |
+| HU11 | Orden de compra sugerida y recepción contra OC | K3, K2 |
+| HU12 | Alertas de lotes por vencer (FEFO) | K4 |
+| HU13 | Registro de mermas con cantidad, costo y motivo | K7 |
+| HU14 | Conteo cíclico por clase ABC, ajustes y exactitud del inventario | K6 |
+
+HU01–HU07 forman el prototipo (H2, en `main`); HU08–HU14 están en `develop` y se liberan a `main` al aprobar el hito correspondiente.
 
 ## Requisitos
 
@@ -89,7 +98,8 @@ GitHub Actions ejecuta las pruebas en cada push, sobre SQLite y sobre MySQL 8.4 
 
 - **Ramas:** `main` contiene las líneas base aprobadas por hito; `develop` es la rama de integración; `feature/hu-xx-*` se usa para cada historia de usuario.
 - **Commits:** siguen [Conventional Commits](https://www.conventionalcommits.org/es/) (`feat:`, `fix:`, `test:`, `docs:`, `chore:`) y referencian la HU.
-- **Tags:** marcan las líneas base por hito: `v0.1.0-mpv` (H2), `v0.2.0-diseno` (H3), `v1.0.0-construccion` (H4).
+- **Tags:** marcan las líneas base por hito: `v0.1.0-mpv` (H2, prototipo), `v0.2.0-diseno` (H3), `v1.0.0` (H4, MPV) y `v1.1.0` (H5, piloto).
+- **Hitos e issues:** cada HU tiene su issue en GitHub (HU01 → #1 … HU17 → #17), asociada a su hito. Los commits la referencian (`Refs: HU-14, #14`) y se cierra al integrarse en `develop`.
 - El detalle está en [`docs/gestion-configuracion.md`](docs/gestion-configuracion.md).
 
 ## Estructura
