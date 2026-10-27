@@ -11,7 +11,7 @@ def login(page, correo):
     page.goto(f"{BASE}/login")
     page.fill("#email", correo)
     page.fill("#password", "ElPortal2026")
-    page.click("button[type=submit]")
+    page.click("form button.btn-success")
     page.wait_for_load_state("networkidle")
 
 
@@ -42,14 +42,14 @@ with sync_playwright() as p:
         valor = sistema - 2 if "Yogur" in nombre else sistema
         fila.locator("input.cantidad").fill(str(valor))
     foto(page, "hu14-02-conteo-planilla-con-diferencia")
-    page.click("button.btn-success")
+    page.click("main form button.btn-success")
     page.wait_for_load_state("networkidle")
     foto(page, "hu14-03-conteo-error-sin-motivo")
     for i in range(filas.count()):
         fila = filas.nth(i)
         if "Yogur" in fila.locator("td").first.inner_text():
             fila.locator("input[name$='[motivo]']").fill("Vencidos retirados sin registrar merma")
-    page.click("button.btn-success")
+    page.click("main form button.btn-success")
     page.wait_for_load_state("networkidle")
     foto(page, "hu14-04-conteo-detalle-exactitud")
     foto(page, "hu14-05-conteos-programacion-actualizada", "/conteos")
