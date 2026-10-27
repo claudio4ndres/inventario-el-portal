@@ -37,6 +37,7 @@
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('conteos.*')) active @endif" href="{{ route('conteos.index') }}"><i class="bi bi-clipboard-data"></i> Conteos</a></li>
                 @endif
                 @if($u->tieneRol('administrador'))
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('indicadores.*')) active @endif" href="{{ route('indicadores.index') }}"><i class="bi bi-graph-up"></i> Indicadores</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('movimientos.*')) active @endif" href="{{ route('movimientos.index') }}">Bitácora</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('ordenes-compra.*')) active @endif" href="{{ route('ordenes-compra.index') }}"><i class="bi bi-clipboard-check"></i> Compras</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('proveedores.*')) active @endif" href="{{ route('proveedores.index') }}"><i class="bi bi-truck"></i> Proveedores</a></li>

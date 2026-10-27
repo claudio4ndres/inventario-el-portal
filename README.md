@@ -3,7 +3,7 @@
 Sistema web de gestión de inventario y ventas para el **almacén El Portal** (Valle Grande, Lampa).
 Proyecto de título de Ingeniería en Computación e Informática — Claudio Figueroa Arias, 2026.
 
-**Estado:** `main` contiene el prototipo aprobado en el hito H2 (HU01–HU07, línea base LB-2). `develop` ya integra HU01–HU14; las HU15–HU17 completan el MPV del hito H4. El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
+**Estado:** `main` contiene el prototipo aprobado en el hito H2 (HU01–HU07, línea base LB-2). `develop` ya integra HU01–HU15; las HU16 y HU17 completan el MPV del hito H4. El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
 
 ## Alcance construido
 
@@ -23,8 +23,9 @@ Proyecto de título de Ingeniería en Computación e Informática — Claudio Fi
 | HU12 | Alertas de lotes por vencer (FEFO) | K4 |
 | HU13 | Registro de mermas con cantidad, costo y motivo | K7 |
 | HU14 | Conteo cíclico por clase ABC, ajustes y exactitud del inventario | K6 |
+| HU15 | Tablero de indicadores M1.1, M1.2, M2 y M3 con gráfico de quiebres por semana | K7 |
 
-HU01–HU07 forman el prototipo (H2, en `main`); HU08–HU14 están en `develop` y se liberan a `main` al aprobar el hito correspondiente.
+HU01–HU07 forman el prototipo (H2, en `main`); HU08–HU15 están en `develop` y se liberan a `main` al aprobar el hito correspondiente.
 
 ## Requisitos
 

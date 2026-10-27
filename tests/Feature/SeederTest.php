@@ -7,6 +7,7 @@ use App\Models\Lote;
 use App\Models\OrdenCompra;
 use App\Models\Producto;
 use App\Models\Proveedor;
+use App\Services\IndicadorService;
 use App\Support\Rut;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -48,5 +49,12 @@ class SeederTest extends TestCase
         $this->assertSame([3, 1], [$conteo->productos_contados, $conteo->productos_con_diferencia]);
         $this->assertSame(27, Producto::where('codigo_barras', '7801610001196')->first()->stockActual());
         $this->assertDatabaseHas('movimientos', ['tipo' => 'AJUSTE', 'cantidad' => 1, 'stock_resultante' => 27]);
+
+        // HU15: el tablero tiene datos para la demostración (merma por vencimiento de un yogur a $280)
+        $indicadores = app(IndicadorService::class)->calcular();
+        $this->assertSame(100.0, $indicadores['m11']['porcentaje']);
+        $this->assertSame(66.7, $indicadores['m12']['exactitud']);
+        $this->assertSame(280, $indicadores['m3']['merma']);
+        $this->assertGreaterThan(0, $indicadores['m3']['porcentaje']);
     }
 }

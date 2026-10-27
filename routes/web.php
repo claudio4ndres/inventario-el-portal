@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConteoController;
+use App\Http\Controllers\IndicadorController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\MermaController;
 use App\Http\Controllers\MovimientoController;
@@ -30,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
 
-    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores y HU11: órdenes de compra -> solo administrador
+    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores, HU11: órdenes de compra y HU15: indicadores -> solo administrador
     Route::middleware('rol:administrador')->group(function () {
         Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
         Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
@@ -67,6 +68,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/ordenes-compra/{orden}', [OrdenCompraController::class, 'show'])->whereNumber('orden')->name('ordenes-compra.show');
         Route::put('/ordenes-compra/{orden}', [OrdenCompraController::class, 'update'])->name('ordenes-compra.update');
         Route::patch('/ordenes-compra/{orden}/enviar', [OrdenCompraController::class, 'enviar'])->name('ordenes-compra.enviar');
+
+        // HU15: tablero de indicadores (M1.1, M1.2, M2 y M3)
+        Route::get('/indicadores', IndicadorController::class)->name('indicadores.index');
     });
 
     // HU03: recepción, HU06: alertas, HU12: lotes por vencer, HU13: mermas y HU14: conteo cíclico -> administrador y bodeguero
