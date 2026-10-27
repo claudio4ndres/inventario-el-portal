@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   capturas:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
@@ -32,11 +32,21 @@ jobs:
         run: |
           nohup php artisan serve --host=127.0.0.1 --port=8000 > serve.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/login >/dev/null && break; sleep 1; done
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Tomar capturas
+        shell: bash
         run: |
-          pip install playwright==1.48.0
-          python -m playwright install --with-deps chromium
-          python .github/capturas/capturar.py
+          set -o pipefail
+          {
+            pip install playwright==1.48.0 &&
+            python -m playwright install --with-deps chromium &&
+            python .github/capturas/capturar.py
+          } 2>&1 | tee capturas.log || {
+            echo "::error title=Capturas::$(tail -25 capturas.log | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')"
+            exit 1
+          }
       - name: Subir capturas a la rama
         run: |
           git config user.name "Claudio Figueroa"
@@ -46,4 +56,6 @@ jobs:
           git push
       - name: Registro del servidor si falla
         if: failure()
-        run: tail -60 serve.log storage/logs/laravel.log || true
+        run: |
+          echo "::error title=Servidor::$(tail -30 serve.log storage/logs/laravel.log 2>/dev/null | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')"
+          true
