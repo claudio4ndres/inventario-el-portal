@@ -98,7 +98,7 @@ GitHub Actions ejecuta las pruebas en cada push, sobre SQLite y sobre MySQL 8.4 
 
 - **Ramas:** `main` contiene las líneas base aprobadas por hito; `develop` es la rama de integración; `feature/hu-xx-*` se usa para cada historia de usuario.
 - **Commits:** siguen [Conventional Commits](https://www.conventionalcommits.org/es/) (`feat:`, `fix:`, `test:`, `docs:`, `chore:`) y referencian la HU.
-- **Tags:** marcan las líneas base por hito: `v0.1.0-mpv` (H2, prototipo), `v0.2.0-diseno` (H3), `v1.0.0` (H4, MPV) y `v1.1.0` (H5, piloto).
+- **Tags:** marcan las líneas base por hito: `v0.1.0` (H2, prototipo), `v0.2.0` (H3), `v1.0.0` (H4, MPV) y `v1.1.0` (H5, piloto).
 - **Hitos e issues:** cada HU tiene su issue en GitHub (HU01 → #1 … HU17 → #17), asociada a su hito. Los commits la referencian (`Refs: HU-14, #14`) y se cierra al integrarse en `develop`.
 - El detalle está en [`docs/gestion-configuracion.md`](docs/gestion-configuracion.md).
 

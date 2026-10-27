@@ -25,8 +25,8 @@ La gestión de la configuración asegura que cada versión del producto y de su 
 |------------|------|---------------------|---------------|
 | LB-1 Requerimientos | H1 (16-10-2026) | Requerimientos v1.0 validados por el administrador | `AINC_requerimientos_v1.0` |
 | LB-1b Requerimientos (cambio aprobado) | Observaciones de la profesora guía (19-10-2026) | Requerimientos v2.0: RF1–RF9, C1–C12, K1–K8, OE1–OE5 | `AINC_requerimientos_v2.0` |
-| LB-2 Prototipo | H2 (23-10-2026) | Prototipo de reducción de riesgo: HU01–HU07 con pruebas en verde | tag `v0.1.0-mpv` (el nombre se conserva por el commit de liberación `8b9c39e`) |
-| LB-3 Diseño | H3 (30-10-2026) | Modelo de datos, pantallas (mockups y capturas) y controles aprobados | tag `v0.2.0-diseno` |
+| LB-2 Prototipo | H2 (23-10-2026) | Prototipo de reducción de riesgo: HU01–HU07 con pruebas en verde | tag `v0.1.0` |
+| LB-3 Diseño | H3 (30-10-2026) | Modelo de datos, pantallas (mockups y capturas) y controles aprobados | tag `v0.2.0` |
 | LB-4 MPV | H4 (10-12-2026) | RF1–RF9 (HU01–HU17) con pruebas unitarias y de integración aprobadas | tag `v1.0.0` |
 | LB-5 Piloto | H5 (18-12-2026) | Versión operando en el local con datos migrados; métricas M1–M5 medidas | tag `v1.1.0` |
 
