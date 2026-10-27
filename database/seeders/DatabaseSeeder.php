@@ -92,5 +92,9 @@ class DatabaseSeeder extends Seeder
             $huevos->id => ['cantidad' => 5],
             $bebida->id => ['cantidad' => 27, 'motivo' => 'Venta no registrada en caja'],
         ]);
+
+        // HU15: merma por vencimiento para el indicador M3 (un yogur del lote ya vencido; quedan 2 en el lote)
+        $loteVencido = $yogur->lotes()->where('codigo_lote', 'YO-0901')->firstOrFail();
+        $inventario->registrarMerma($bodeguero, $loteVencido->id, 1, 'vencimiento', 'Retirado de la góndola');
     }
 }

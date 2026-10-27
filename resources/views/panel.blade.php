@@ -28,5 +28,8 @@
         <a class="btn btn-outline-danger btn-lg" href="{{ route('alertas.index') }}"><i class="bi bi-bell"></i> Ver alertas</a>
         <a class="btn btn-outline-warning btn-lg" href="{{ route('lotes.por-vencer') }}"><i class="bi bi-hourglass-split"></i> Lotes por vencer</a>
     @endif
+    @if(auth()->user()->tieneRol('administrador'))
+        <a class="btn btn-outline-primary btn-lg" href="{{ route('indicadores.index') }}"><i class="bi bi-graph-up"></i> Indicadores</a>
+    @endif
 </div>
 @endsection
