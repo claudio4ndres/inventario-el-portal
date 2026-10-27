@@ -45,6 +45,7 @@ feature/hu-xx   ●     ●        ●──●             ← una rama por his
 ```
 
 - **Commits** con Conventional Commits (`feat(ventas): …`, `fix: …`, `test: …`) y la referencia a la HU y a su issue (`Refs: HU-04, #4`).
+- **Mensajes sin firmas de IA:** el hook `.githooks/commit-msg` rechaza todo commit cuyo mensaje mencione a Claude o Anthropic. Se activa una vez por clon con `git config core.hooksPath .githooks`.
 - **Integración:** una rama `feature/*` se integra a `develop` solo con las pruebas de GitHub Actions en verde (SQLite y MySQL 8.4). Al integrarla se cierra la issue de la HU con el commit de integración y el número de pruebas como evidencia.
 - **Liberación:** `develop` se integra a `main` al aprobar un hito, y se crea el tag de la línea base.
 

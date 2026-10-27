@@ -57,6 +57,7 @@ docker run --rm -p 8000:8000 ghcr.io/claudio4ndres/inventario-el-portal:develop
 ```bash
 git clone https://github.com/claudio4ndres/inventario-el-portal.git
 cd inventario-el-portal
+git config core.hooksPath .githooks   # activa el control de mensajes de commit
 composer install
 cp .env.example .env
 php artisan key:generate
