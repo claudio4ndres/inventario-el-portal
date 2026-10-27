@@ -1,0 +1,23 @@
+#!/bin/sh
+# Hook commit-msg: rechaza mensajes de commit con firma o atribución de IA.
+# Se activa una vez por clon con:  git config core.hooksPath .githooks
+#
+# Git llama a este script con la ruta del archivo que contiene el mensaje ($1).
+# Si el script termina con un código distinto de 0, git cancela el commit.
+
+archivo="$1"
+patron='claude|anthropic'
+
+# Ignora las líneas de comentario (#) que git agrega al editor.
+coincidencias=$(grep -v '^#' "$archivo" | grep -inE "$patron")
+
+if [ -n "$coincidencias" ]; then
+  echo "ERROR: el mensaje del commit contiene una firma o atribución no permitida:" >&2
+  echo "$coincidencias" | sed 's/^/  línea /' >&2
+  echo "" >&2
+  echo "Quita esas líneas y vuelve a hacer el commit." >&2
+  echo "El mensaje quedó guardado en .git/COMMIT_EDITMSG (puedes reutilizarlo con: git commit -e -F .git/COMMIT_EDITMSG)." >&2
+  exit 1
+fi
+
+exit 0
