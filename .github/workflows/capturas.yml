@@ -1,0 +1,49 @@
+name: Capturas de pantalla
+
+# Flujo TEMPORAL, solo en la rama capturas/pantallas (no se integra a develop ni a main).
+# Levanta la aplicación con los datos de demostración, toma capturas con Playwright
+# y las sube como commit a esta misma rama, en la carpeta capturas/.
+on:
+  push:
+    branches: ['capturas/pantallas']
+    paths: ['.github/**']
+
+permissions:
+  contents: write
+
+jobs:
+  capturas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, sqlite3
+          coverage: none
+      - name: Preparar la aplicación
+        run: |
+          composer install --no-interaction --prefer-dist --no-progress
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --seed --force
+      - name: Levantar el servidor
+        run: |
+          nohup php artisan serve --host=127.0.0.1 --port=8000 > serve.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/login >/dev/null && break; sleep 1; done
+      - name: Tomar capturas
+        run: |
+          pip install playwright==1.48.0
+          python -m playwright install --with-deps chromium
+          python .github/capturas/capturar.py
+      - name: Subir capturas a la rama
+        run: |
+          git config user.name "Claudio Figueroa"
+          git config user.email "claudio.figueroa.arias@gmail.com"
+          git add capturas/
+          git commit -m "chore: capturas de pantalla con datos de demostración [skip ci]"
+          git push
+      - name: Registro del servidor si falla
+        if: failure()
+        run: tail -60 serve.log storage/logs/laravel.log || true
