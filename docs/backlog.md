@@ -24,7 +24,7 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 | 13 | HU11 | Orden de compra sugerida y recepción contra OC | Should | HU09, HU10 | hecha |
 | 14 | HU14 | Conteo cíclico por clase ABC y ajustes | Should | HU07 | hecha |
 | 15 | HU15 | Tablero con al menos 4 indicadores | Should | HU13, HU14 | hecha |
-| 16 | HU16 | Importar catálogo inicial desde CSV | Should | HU02 | pendiente |
+| 16 | HU16 | Importar catálogo inicial desde CSV | Should | HU02 | hecha |
 | 17 | HU17 | Clasificación ABC automática | Could | HU04 | pendiente |
 
 ## Criterios de aceptación de las historias pendientes
@@ -98,3 +98,4 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - 25-10-2026: HU11 (orden de compra sugerida por proveedor desde las alertas, cantidad = punto de reorden × 2 − stock editable en borrador, estados borrador/enviada/recibida y recepción contra OC con diferencias de cantidad) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (112 pruebas en total; 12 nuevas). Nueva migración: tablas `ordenes_compra` y `detalle_ordenes_compra`, y columna `recepciones.orden_compra_id`.
 - 26-10-2026: HU14 (conteo cíclico por clase ABC: A semanal, B quincenal y C mensual; cada diferencia exige motivo y genera movimientos AJUSTE, el faltante en orden FEFO y el sobrante en el lote más reciente; exactitud por conteo y de los últimos 30 días) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (121 pruebas en total; 9 nuevas). Nueva migración: tablas `conteos` y `detalle_conteos`, y columna `movimientos.detalle_conteo_id`.
 - 27-10-2026: HU15 (tablero de indicadores para el administrador: M1.1 ventas con descuento automático por lote, M1.2 exactitud de los conteos de 30 días, M2 quiebres de productos clase A en 4 semanas con gráfico semanal y M3 merma por vencimiento a costo sobre las ventas; calculados al consultar, sin caché) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (128 pruebas en total; 7 nuevas). Sin cambios de esquema.
+- 28-10-2026: HU16 (importación del catálogo inicial desde CSV con separador punto y coma o coma, vista previa con errores fila por fila, códigos repetidos en el archivo detectados, filas válidas importadas en una transacción y actualización del producto si el código ya existe; plantilla descargable) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (138 pruebas en total; 10 nuevas). Sin cambios de esquema.
