@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConteoController;
+use App\Http\Controllers\ImportacionCatalogoController;
 use App\Http\Controllers\IndicadorController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\MermaController;
@@ -31,13 +32,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
 
-    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores, HU11: órdenes de compra y HU15: indicadores -> solo administrador
+    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores, HU11: órdenes de compra, HU15: indicadores y HU16: importación del catálogo -> solo administrador
     Route::middleware('rol:administrador')->group(function () {
         Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
         Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
         Route::get('/productos/{producto}/editar', [ProductoController::class, 'edit'])->name('productos.edit');
         Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
         Route::patch('/productos/{producto}/estado', [ProductoController::class, 'toggle'])->name('productos.toggle');
+
+        // HU16: importar el catálogo inicial desde CSV (subir → vista previa → confirmar)
+        Route::get('/productos/importar', [ImportacionCatalogoController::class, 'create'])->name('productos.importar');
+        Route::get('/productos/importar/plantilla', [ImportacionCatalogoController::class, 'plantilla'])->name('productos.importar.plantilla');
+        Route::post('/productos/importar/vista-previa', [ImportacionCatalogoController::class, 'vistaPrevia'])->name('productos.importar.vista-previa');
+        Route::post('/productos/importar', [ImportacionCatalogoController::class, 'store'])->name('productos.importar.store');
 
         // HU10: botón "Recalcular" del punto de reorden
         Route::post('/productos/recalcular-reorden', PuntoReordenController::class)->name('productos.recalcular-reorden');

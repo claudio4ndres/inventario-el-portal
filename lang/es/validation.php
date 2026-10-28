@@ -9,18 +9,21 @@ return [
     'date' => 'El campo :attribute no es una fecha válida.',
     'email' => 'El campo :attribute debe ser un correo válido.',
     'exists' => 'El valor seleccionado en :attribute no es válido.',
+    'file' => 'El campo :attribute debe ser un archivo.',
     'in' => 'El valor seleccionado en :attribute no es válido.',
     'integer' => 'El campo :attribute debe ser un número entero.',
     'max' => [
         'numeric' => 'El campo :attribute no debe ser mayor que :max.',
         'string' => 'El campo :attribute no debe superar :max caracteres.',
         'array' => 'El campo :attribute no debe tener más de :max elementos.',
+        'file' => 'El :attribute no debe pesar más de :max kilobytes.',
     ],
     'min' => [
         'numeric' => 'El campo :attribute debe ser al menos :min.',
         'string' => 'El campo :attribute debe tener al menos :min caracteres.',
         'array' => 'El campo :attribute debe tener al menos :min elemento(s).',
     ],
+    'mimes' => 'El :attribute debe ser de tipo: :values.',
     'regex' => 'El formato de :attribute no es válido.',
     'rut' => 'El :attribute no es válido: revise el formato y el dígito verificador.',
     'required' => 'El campo :attribute es obligatorio.',
@@ -67,6 +70,7 @@ return [
         'conteos' => 'productos contados',
         'conteos.*.cantidad' => 'cantidad contada',
         'conteos.*.motivo' => 'motivo de la diferencia',
+        'archivo' => 'archivo CSV',
     ],
 
     // HU13: la cantidad de una merma no puede superar el saldo del lote
