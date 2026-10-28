@@ -63,6 +63,7 @@ feature/hu-xx   ●     ●        ●──●             ← una rama por his
 |-----|-------|--------|--------|---------|--------|
 | CC-01 | 19-10-2026 | Observaciones de la profesora guía al anteproyecto | Caso real (almacén El Portal); causas C1–C12 con C4 y C2 como principales; controles K1–K8; nuevo OE5; RF1–RF9; descuento de stock por lote; plan de 26 semanas en 2 etapas | HU repriorizadas; el lote pasa a formar parte del MPV; cronograma actualizado | Aprobado |
 | CC-02 | 26-10-2026 | Avance real del desarrollo (S19–S20) | Se construyen las HU08–HU14 antes de aprobar el diseño (H3), en solapamiento controlado con la fase de diseño; se agrega el riesgo R10 (dominio insuficiente del código generado con IA) | El MPV puede quedar listo antes de H4 y libera tiempo para el piloto (H5); el diseño de H3 debe validar los módulos ya construidos | Aprobado en el acta de H3 (issue #41; firma pendiente) |
+| CC-03 | 28-10-2026 | Actualización de la plataforma | PHP 8.3 → 8.4 y PHPUnit 12 → 13 (`composer.json`, CI y Dockerfile); la CI verifica ambas versiones antes de ejecutar las pruebas | Sin cambios funcionales; se valida con la batería completa de pruebas en SQLite y MySQL 8.4; los entornos locales y del piloto deben usar PHP 8.4 | En revisión |
 
 ## 5. Auditoría de la configuración
 

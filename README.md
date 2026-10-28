@@ -29,7 +29,7 @@ HU01–HU07 forman el prototipo (H2, en `main`); HU08–HU15 están en `develop`
 
 ## Requisitos
 
-- PHP 8.3 o superior, con las extensiones `pdo_sqlite` o `pdo_mysql`
+- PHP 8.4 o superior, con las extensiones `pdo_sqlite` o `pdo_mysql`
 - Composer 2
 - MySQL 8.4 (producción) o SQLite (desarrollo rápido)
 

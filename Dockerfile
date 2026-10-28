@@ -1,5 +1,5 @@
-# Imagen de demostración del sistema de inventario El Portal (Laravel 13 + PHP 8.3 + SQLite)
-FROM php:8.3-cli-bookworm
+# Imagen de demostración del sistema de inventario El Portal (Laravel 13 + PHP 8.4 + SQLite)
+FROM php:8.4-cli-bookworm
 
 # pdo_sqlite ya viene en la imagen oficial; se agrega pdo_mysql para usar MySQL 8.4 si se desea
 RUN apt-get update \
