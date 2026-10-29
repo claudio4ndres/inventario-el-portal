@@ -25,7 +25,7 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 | 14 | HU14 | Conteo cíclico por clase ABC y ajustes | Should | HU07 | hecha |
 | 15 | HU15 | Tablero con al menos 4 indicadores | Should | HU13, HU14 | hecha |
 | 16 | HU16 | Importar catálogo inicial desde CSV | Should | HU02 | hecha |
-| 17 | HU17 | Clasificación ABC automática | Could | HU04 | pendiente |
+| 17 | HU17 | Clasificación ABC automática | Could | HU04 | hecha |
 
 ## Criterios de aceptación de las historias pendientes
 
@@ -99,3 +99,4 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - 26-10-2026: HU14 (conteo cíclico por clase ABC: A semanal, B quincenal y C mensual; cada diferencia exige motivo y genera movimientos AJUSTE, el faltante en orden FEFO y el sobrante en el lote más reciente; exactitud por conteo y de los últimos 30 días) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (121 pruebas en total; 9 nuevas). Nueva migración: tablas `conteos` y `detalle_conteos`, y columna `movimientos.detalle_conteo_id`.
 - 27-10-2026: HU15 (tablero de indicadores para el administrador: M1.1 ventas con descuento automático por lote, M1.2 exactitud de los conteos de 30 días, M2 quiebres de productos clase A en 4 semanas con gráfico semanal y M3 merma por vencimiento a costo sobre las ventas; calculados al consultar, sin caché) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (128 pruebas en total; 7 nuevas). Sin cambios de esquema.
 - 28-10-2026: HU16 (importación del catálogo inicial desde CSV con separador punto y coma o coma, vista previa con errores fila por fila, códigos repetidos en el archivo detectados, filas válidas importadas en una transacción y actualización del producto si el código ya existe; plantilla descargable) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (138 pruebas en total; 10 nuevas). Sin cambios de esquema.
+- 29-10-2026: HU17 (clasificación ABC automática por valor vendido en los últimos 90 días: A hasta el 80 % acumulado, B hasta el 95 % y C el resto, con el producto que cruza el umbral en la clase superior; sin ventas no se modifica nada; comando `inventario:recalcular-abc` y botón "Recalcular ABC") integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (150 pruebas en total; 12 nuevas). Sin cambios de esquema. Backlog completo: MPV listo para el hito H4.
