@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClasificacionAbcController;
 use App\Http\Controllers\ConteoController;
 use App\Http\Controllers\ImportacionCatalogoController;
 use App\Http\Controllers\IndicadorController;
@@ -32,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
 
-    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores, HU11: órdenes de compra, HU15: indicadores y HU16: importación del catálogo -> solo administrador
+    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores, HU11: órdenes de compra, HU15: indicadores, HU16: importación del catálogo y HU17: clasificación ABC -> solo administrador
     Route::middleware('rol:administrador')->group(function () {
         Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
         Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
@@ -48,6 +49,9 @@ Route::middleware('auth')->group(function () {
 
         // HU10: botón "Recalcular" del punto de reorden
         Route::post('/productos/recalcular-reorden', PuntoReordenController::class)->name('productos.recalcular-reorden');
+
+        // HU17: botón "Recalcular ABC" (valor vendido en los últimos 90 días)
+        Route::post('/productos/recalcular-abc', ClasificacionAbcController::class)->name('productos.recalcular-abc');
 
         Route::get('/movimientos', [MovimientoController::class, 'index'])->name('movimientos.index');
 

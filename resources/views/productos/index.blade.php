@@ -10,6 +10,11 @@
                 <button class="btn btn-outline-success" title="Recalcula el punto de reorden de los productos con ventas en los últimos 28 días">
                     <i class="bi bi-arrow-repeat"></i> Recalcular punto de reorden</button>
             </form>
+            {{-- HU17: clasificación ABC por valor vendido en los últimos 90 días --}}
+            <form method="POST" action="{{ route('productos.recalcular-abc') }}">@csrf
+                <button class="btn btn-outline-success" title="Clasifica los productos por valor vendido en los últimos 90 días: A hasta el 80 % acumulado, B hasta el 95 % y C el resto">
+                    <i class="bi bi-bar-chart-steps"></i> Recalcular ABC</button>
+            </form>
             {{-- HU16: carga masiva del catálogo desde CSV --}}
             <a class="btn btn-outline-primary" href="{{ route('productos.importar') }}"><i class="bi bi-file-earmark-arrow-up"></i> Importar CSV</a>
             <a class="btn btn-success" href="{{ route('productos.create') }}"><i class="bi bi-plus-lg"></i> Nuevo producto</a>
