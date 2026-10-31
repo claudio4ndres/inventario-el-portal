@@ -41,4 +41,5 @@ fi
 
 PORT="${PORT:-8000}"
 echo "Inventario El Portal escuchando en el puerto ${PORT}"
-exec php artisan serve --host=0.0.0.0 --port="${PORT}"
+# --no-reload: necesario para que PHP_CLI_SERVER_WORKERS atienda varias peticiones a la vez
+exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
