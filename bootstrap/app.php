@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'rol' => EnsureUserHasRole::class,
         ]);
+        // Detrás del proxy HTTPS de Railway (o cualquier balanceador): respetar X-Forwarded-*
+        // para que las URL y los formularios se generen con https y no los bloquee el navegador.
+        $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/');
     })

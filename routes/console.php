@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Services\ClasificacionAbcService;
 use App\Services\PuntoReordenService;
 use Illuminate\Foundation\Inspiring;
@@ -30,6 +31,19 @@ Artisan::command('inventario:recalcular-abc', function (ClasificacionAbcService 
 
     $this->info("Clasificación ABC recalculada: {$resumen['A']} producto(s) en A, {$resumen['B']} en B y {$resumen['C']} en C.");
 })->purpose('Recalcula la clase ABC según el valor vendido en los últimos 90 días (HU17)');
+
+// Despliegue: carga los datos de demostración solo si la base está vacía (sin usuarios).
+// Así un reinicio o un nuevo despliegue nunca duplica ni borra datos existentes.
+Artisan::command('inventario:sembrar-demo', function () {
+    if (User::query()->exists()) {
+        $this->info('La base ya tiene usuarios: no se cargan datos de demostración.');
+
+        return;
+    }
+
+    $this->call('db:seed', ['--force' => true]);
+    $this->info('Datos de demostración cargados.');
+})->purpose('Carga los datos de demostración si la base de datos está vacía (despliegue)');
 
 // Se programa cada madrugada, antes de abrir el almacén. En el servidor basta con
 // el cron de Laravel: * * * * * php artisan schedule:run
