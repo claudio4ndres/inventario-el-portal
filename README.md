@@ -3,7 +3,7 @@
 Sistema web de gestión de inventario y ventas para el **almacén El Portal** (Valle Grande, Lampa).
 Proyecto de título de Ingeniería en Computación e Informática — Claudio Figueroa Arias, 2026.
 
-**Estado:** `main` contiene el prototipo aprobado en el hito H2 (HU01–HU07, línea base LB-2). `develop` integra HU01–HU17, el alcance completo del MPV del hito H4. El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
+**Estado:** `main` contiene el MPV completo (HU01–HU17, RF1–RF9), línea base LB-4 con el tag `v1.0.0`, verificado con 159 pruebas unitarias y de integración en SQLite y MySQL 8.4. El siguiente hito es el piloto en el local (H5). El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
 
 ## Alcance construido
 
@@ -112,6 +112,6 @@ GitHub Actions ejecuta las pruebas en cada push, sobre SQLite y sobre MySQL 8.4 
 app/Services/InventarioService.php   reglas de negocio: recepción y venta con descuento por lote (transaccional)
 app/Http/Middleware/EnsureUserHasRole.php   control de acceso por rol
 database/migrations/                  modelo de datos
-tests/Feature/                        pruebas por historia de usuario
+tests/Feature/                        pruebas por historia de usuario y de integración (FlujoIntegracionTest, MatrizAccesoTest)
 docs/                                 modelo de datos y gestión de configuración
 ```
