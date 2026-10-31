@@ -55,6 +55,35 @@ docker login ghcr.io -u claudio4ndres      # contraseña: token con permiso read
 docker run --rm -p 8000:8000 ghcr.io/claudio4ndres/inventario-el-portal:develop
 ```
 
+## Publicar en Railway
+
+El repositorio trae `railway.json`: Railway construye el `Dockerfile` en sus servidores y revisa `/up` antes de dar tráfico.
+
+1. Crear un proyecto con un servicio **MySQL** y un servicio desde este repositorio (rama `main`).
+2. Variables del servicio web:
+
+```
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:...                 # php artisan key:generate --show (fija, no cambiar)
+APP_URL=https://<dominio>.up.railway.app
+LOG_CHANNEL=stderr
+DEMO_RESET=false                   # nunca borrar datos al reiniciar
+SEED_DEMO=true                     # datos de demostración solo si la base está vacía
+RUN_SCHEDULER=true                 # recálculo diario del punto de reorden (HU10)
+PHP_CLI_SERVER_WORKERS=4
+DB_CONNECTION=mysql
+DB_HOST=${{MySQL.MYSQLHOST}}
+DB_PORT=${{MySQL.MYSQLPORT}}
+DB_DATABASE=${{MySQL.MYSQLDATABASE}}
+DB_USERNAME=${{MySQL.MYSQLUSER}}
+DB_PASSWORD=${{MySQL.MYSQLPASSWORD}}
+```
+
+3. Generar el dominio público del servicio web (puerto 8000).
+
+Antes del piloto: cambiar las contraseñas de los usuarios de demostración y cargar el catálogo real con la importación CSV (HU16).
+
 ## Instalación local
 
 ```bash
