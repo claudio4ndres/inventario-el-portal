@@ -25,10 +25,14 @@ La gestión de la configuración asegura que cada versión del producto y de su 
 |------------|------|---------------------|---------------|
 | LB-1 Requerimientos | H1 (16-10-2026) | Requerimientos v1.0 validados por el administrador | `AINC_requerimientos_v1.0` |
 | LB-1b Requerimientos (cambio aprobado) | Observaciones de la profesora guía (19-10-2026) | Requerimientos v2.0: RF1–RF9, C1–C12, K1–K8, OE1–OE5 | `AINC_requerimientos_v2.0` |
-| LB-2 Prototipo / MPV | H2 (23-10-2026) | MPV HU01–HU07 con pruebas en verde | tag `v0.1.0-mpv` |
-| LB-3 Diseño | H3 (30-10-2026) | Modelo de datos completo, mockups y controles | tag `v0.2.0-diseno` |
-| LB-4 Construcción | H4 (10-12-2026) | Todos los módulos con pruebas unitarias y de integración | tag `v1.0.0-construccion` |
-| LB-5 Producción | H7 (16-04-2027) | Versión en producción en el local | tag `v1.1.0` |
+| LB-2 Prototipo | H2 (23-10-2026) | Prototipo de reducción de riesgo: HU01–HU07 con pruebas en verde | tag `v0.1.0` |
+| LB-3 Diseño | H3 (30-10-2026) | Modelo de datos, pantallas (mockups y capturas) y controles aprobados | tag `v0.2.0` |
+| LB-4 MPV | H4 (10-12-2026) | RF1–RF9 (HU01–HU17) con pruebas unitarias y de integración aprobadas | tag `v1.0.0` |
+| LB-5 Piloto | H5 (18-12-2026) | Versión operando en el local con datos migrados; métricas M1–M5 medidas | tag `v1.1.0` |
+
+El hito **H6 · Presentación final (22-12-2026)** no congela código: entrega el informe y la presentación (IC-09).
+
+**Hitos en GitHub:** cada hito del plan es un *milestone* del repositorio (H0 a H6, con su fecha) y agrupa las issues de sus HU, entregables de gestión y cambios. Un hito se da por cumplido cuando sus issues están cerradas con evidencia y existe el tag de su línea base.
 
 ## 3. Control de versiones (Git)
 
@@ -40,8 +44,9 @@ develop     ●──●──●──●──●──●──●──●�
 feature/hu-xx   ●     ●        ●──●             ← una rama por historia de usuario
 ```
 
-- **Commits** con Conventional Commits (`feat(ventas): …`, `fix: …`, `test: …`) y la referencia a la HU (`Refs: HU04`).
-- **Integración:** una rama `feature/*` se integra a `develop` solo con las pruebas de GitHub Actions en verde (SQLite y MySQL 8.4).
+- **Commits** con Conventional Commits (`feat(ventas): …`, `fix: …`, `test: …`) y la referencia a la HU y a su issue (`Refs: HU-04, #4`).
+- **Mensajes sin firmas de IA:** el hook `.githooks/commit-msg` rechaza todo commit cuyo mensaje mencione a Claude o Anthropic. Se activa una vez por clon con `git config core.hooksPath .githooks`.
+- **Integración:** una rama `feature/*` se integra a `develop` solo con las pruebas de GitHub Actions en verde (SQLite y MySQL 8.4). Al integrarla se cierra la issue de la HU con el commit de integración y el número de pruebas como evidencia.
 - **Liberación:** `develop` se integra a `main` al aprobar un hito, y se crea el tag de la línea base.
 
 ## 4. Control de cambios
@@ -57,6 +62,7 @@ feature/hu-xx   ●     ●        ●──●             ← una rama por his
 | N.º | Fecha | Origen | Cambio | Impacto | Estado |
 |-----|-------|--------|--------|---------|--------|
 | CC-01 | 19-10-2026 | Observaciones de la profesora guía al anteproyecto | Caso real (almacén El Portal); causas C1–C12 con C4 y C2 como principales; controles K1–K8; nuevo OE5; RF1–RF9; descuento de stock por lote; plan de 26 semanas en 2 etapas | HU repriorizadas; el lote pasa a formar parte del MPV; cronograma actualizado | Aprobado |
+| CC-02 | 26-10-2026 | Avance real del desarrollo (S19–S20) | Se construyen las HU08–HU14 antes de aprobar el diseño (H3), en solapamiento controlado con la fase de diseño; se agrega el riesgo R10 (dominio insuficiente del código generado con IA) | El MPV puede quedar listo antes de H4 y libera tiempo para el piloto (H5); el diseño de H3 debe validar los módulos ya construidos | Aprobado en el acta de H3 (issue #41; firma pendiente) |
 
 ## 5. Auditoría de la configuración
 

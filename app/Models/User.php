@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -34,5 +35,41 @@ class User extends Authenticatable
     public function tieneRol(string ...$roles): bool
     {
         return in_array($this->rol, $roles, true);
+    }
+
+    public function movimientos(): HasMany
+    {
+        return $this->hasMany(Movimiento::class, 'user_id');
+    }
+
+    public function ventas(): HasMany
+    {
+        return $this->hasMany(Venta::class, 'user_id');
+    }
+
+    public function recepciones(): HasMany
+    {
+        return $this->hasMany(Recepcion::class, 'user_id');
+    }
+
+    public function ordenesCompra(): HasMany
+    {
+        return $this->hasMany(OrdenCompra::class, 'user_id');
+    }
+
+    /** HU14: conteos cíclicos registrados por el usuario. */
+    public function conteos(): HasMany
+    {
+        return $this->hasMany(Conteo::class, 'user_id');
+    }
+
+    /** HU08: un usuario con historia no se elimina, se desactiva (FK con RESTRICT). */
+    public function tieneHistoria(): bool
+    {
+        return $this->movimientos()->exists()
+            || $this->ventas()->exists()
+            || $this->recepciones()->exists()
+            || $this->ordenesCompra()->exists()    // HU11
+            || $this->conteos()->exists();         // HU14
     }
 }

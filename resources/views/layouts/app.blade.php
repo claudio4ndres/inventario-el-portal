@@ -32,9 +32,16 @@
                 @if($u->tieneRol('administrador', 'bodeguero'))
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('recepciones.*')) active @endif" href="{{ route('recepciones.index') }}">Recepciones</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('alertas.*')) active @endif" href="{{ route('alertas.index') }}"><i class="bi bi-bell"></i> Alertas</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('lotes.*')) active @endif" href="{{ route('lotes.por-vencer') }}"><i class="bi bi-hourglass-split"></i> Por vencer</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('mermas.*')) active @endif" href="{{ route('mermas.index') }}"><i class="bi bi-trash3"></i> Mermas</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('conteos.*')) active @endif" href="{{ route('conteos.index') }}"><i class="bi bi-clipboard-data"></i> Conteos</a></li>
                 @endif
                 @if($u->tieneRol('administrador'))
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('indicadores.*')) active @endif" href="{{ route('indicadores.index') }}"><i class="bi bi-graph-up"></i> Indicadores</a></li>
                     <li class="nav-item"><a class="nav-link @if(request()->routeIs('movimientos.*')) active @endif" href="{{ route('movimientos.index') }}">Bitácora</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('ordenes-compra.*')) active @endif" href="{{ route('ordenes-compra.index') }}"><i class="bi bi-clipboard-check"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('proveedores.*')) active @endif" href="{{ route('proveedores.index') }}"><i class="bi bi-truck"></i> Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('usuarios.*')) active @endif" href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a></li>
                 @endif
             </ul>
             <span class="navbar-text text-white me-3"><i class="bi bi-person-circle"></i> {{ $u->name }} <span class="badge bg-light text-success">{{ $u->rol }}</span></span>

@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\OrdenCompra;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Models\User;
 use App\Services\InventarioService;
+use App\Services\OrdenCompraService;
 use Illuminate\Database\Seeder;
 
 /**
@@ -14,15 +16,17 @@ use Illuminate\Database\Seeder;
  */
 class DatabaseSeeder extends Seeder
 {
-    public function run(InventarioService $inventario): void
+    public function run(InventarioService $inventario, OrdenCompraService $compras): void
     {
         $admin = User::create(['name' => 'Administrador', 'email' => 'admin@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::ADMINISTRADOR]);
         $vendedor = User::create(['name' => 'Caja', 'email' => 'caja@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::VENDEDOR]);
         $bodeguero = User::create(['name' => 'Bodega', 'email' => 'bodega@elportal.test', 'password' => 'ElPortal2026', 'rol' => User::BODEGUERO]);
 
-        $lacteos = Proveedor::create(['rut' => '76.111.111-1', 'razon_social' => 'Distribuidora Lácteos del Sur', 'telefono' => '+56222222222']);
-        $abarrotes = Proveedor::create(['rut' => '76.222.222-2', 'razon_social' => 'Mayorista Abarrotes Central', 'telefono' => '+56233333333']);
-        $panaderia = Proveedor::create(['rut' => '76.333.333-3', 'razon_social' => 'Panificadora Valle Grande', 'telefono' => '+56244444444']);
+        $lacteos = Proveedor::create(['rut' => '76.111.111-6', 'razon_social' => 'Distribuidora Lácteos del Sur', 'telefono' => '+56222222222']);
+        $abarrotes = Proveedor::create(['rut' => '76.222.222-1', 'razon_social' => 'Mayorista Abarrotes Central', 'telefono' => '+56233333333']);
+        $panaderia = Proveedor::create(['rut' => '76.333.333-7', 'razon_social' => 'Panificadora Valle Grande', 'telefono' => '+56244444444']);
+        // Proveedor inactivo: no aparece en la recepción (HU09)
+        Proveedor::create(['rut' => '76.444.444-2', 'razon_social' => 'Embutidos La Montaña (sin contrato)', 'telefono' => '+56255555555', 'activo' => false]);
 
         $p = fn (string $codigo, string $nombre, int $precio, int $reorden, string $abc) => Producto::create([
             'codigo_barras' => $codigo, 'nombre' => $nombre, 'precio_venta' => $precio,
@@ -39,10 +43,17 @@ class DatabaseSeeder extends Seeder
         $azucar = $p('7801555000202', 'Azúcar 1 kg', 1290, 6, 'C');
         $p('7801234567892', 'Cecina jamón 250 g', 2490, 4, 'C');   // sin stock -> aparece en alertas
 
+        // HU10: parámetros de reposición de ejemplo (el lácteo llega cada 2 días; el abarrote, semanal)
+        $leche->update(['dias_reposicion' => 2, 'stock_seguridad' => 10]);
+        $huevos->update(['dias_reposicion' => 3, 'stock_seguridad' => 5]);
+        $arroz->update(['dias_reposicion' => 7, 'stock_seguridad' => 4]);
+
         $inventario->registrarRecepcion($bodeguero, ['proveedor_id' => $lacteos->id, 'numero_documento' => 'F-10234'], [
             ['producto_id' => $leche->id, 'cantidad' => 10, 'codigo_lote' => 'LE-2611A', 'fecha_vencimiento' => now()->addDays(4)->toDateString(), 'costo_unitario' => 850],
             ['producto_id' => $leche->id, 'cantidad' => 24, 'codigo_lote' => 'LE-2611B', 'fecha_vencimiento' => now()->addDays(20)->toDateString(), 'costo_unitario' => 850],
             ['producto_id' => $yogur->id, 'cantidad' => 12, 'codigo_lote' => 'YO-0912', 'fecha_vencimiento' => now()->addDays(6)->toDateString(), 'costo_unitario' => 280],
+            // Lote ya vencido: aparece destacado en "Lotes por vencer" (HU12)
+            ['producto_id' => $yogur->id, 'cantidad' => 3, 'codigo_lote' => 'YO-0901', 'fecha_vencimiento' => now()->subDay()->toDateString(), 'costo_unitario' => 280],
         ]);
         $inventario->registrarRecepcion($bodeguero, ['proveedor_id' => $abarrotes->id, 'numero_documento' => 'F-55871'], [
             ['producto_id' => $huevos->id, 'cantidad' => 8, 'codigo_lote' => 'HU-1020', 'fecha_vencimiento' => now()->addDays(18)->toDateString(), 'costo_unitario' => 2400],
@@ -64,5 +75,26 @@ class DatabaseSeeder extends Seeder
             ['producto_id' => $huevos->id, 'cantidad' => 3],
             ['producto_id' => $panMolde->id, 'cantidad' => 2],
         ], 'debito');
+
+        // HU13: una merma de ejemplo (un pan de molde con el envase roto)
+        $loteDanado = $panMolde->lotes()->where('codigo_lote', 'PM-1019')->firstOrFail();
+        $inventario->registrarMerma($bodeguero, $loteDanado->id, 1, 'dano', 'Envase roto al reponer la góndola');
+
+        // HU11: órdenes de compra sugeridas (una por proveedor); la del mayorista queda enviada
+        // para probar la recepción contra OC. La cecina no tiene proveedor y no se incluye.
+        $compras->generarSugeridas($admin)
+            ->firstWhere('proveedor_id', $abarrotes->id)
+            ?->update(['estado' => OrdenCompra::ENVIADA, 'fecha_envio' => now()]);
+
+        // HU14: conteo cíclico de la clase A con una diferencia (falta una bebida); B y C quedan pendientes
+        $inventario->registrarConteo($bodeguero, 'A', [
+            $leche->id => ['cantidad' => 22],
+            $huevos->id => ['cantidad' => 5],
+            $bebida->id => ['cantidad' => 27, 'motivo' => 'Venta no registrada en caja'],
+        ]);
+
+        // HU15: merma por vencimiento para el indicador M3 (un yogur del lote ya vencido; quedan 2 en el lote)
+        $loteVencido = $yogur->lotes()->where('codigo_lote', 'YO-0901')->firstOrFail();
+        $inventario->registrarMerma($bodeguero, $loteVencido->id, 1, 'vencimiento', 'Retirado de la góndola');
     }
 }

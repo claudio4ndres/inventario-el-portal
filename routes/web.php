@@ -2,10 +2,20 @@
 
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClasificacionAbcController;
+use App\Http\Controllers\ConteoController;
+use App\Http\Controllers\ImportacionCatalogoController;
+use App\Http\Controllers\IndicadorController;
+use App\Http\Controllers\LoteController;
+use App\Http\Controllers\MermaController;
 use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\PuntoReordenController;
 use App\Http\Controllers\RecepcionController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
 
-    // HU02: mantenedor de productos y HU07: bitácora -> solo administrador
+    // HU02: mantenedor de productos, HU10: punto de reorden, HU07: bitácora, HU08: usuarios, HU09: proveedores, HU11: órdenes de compra, HU15: indicadores, HU16: importación del catálogo y HU17: clasificación ABC -> solo administrador
     Route::middleware('rol:administrador')->group(function () {
         Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
         Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
@@ -31,16 +41,69 @@ Route::middleware('auth')->group(function () {
         Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
         Route::patch('/productos/{producto}/estado', [ProductoController::class, 'toggle'])->name('productos.toggle');
 
+        // HU16: importar el catálogo inicial desde CSV (subir → vista previa → confirmar)
+        Route::get('/productos/importar', [ImportacionCatalogoController::class, 'create'])->name('productos.importar');
+        Route::get('/productos/importar/plantilla', [ImportacionCatalogoController::class, 'plantilla'])->name('productos.importar.plantilla');
+        Route::post('/productos/importar/vista-previa', [ImportacionCatalogoController::class, 'vistaPrevia'])->name('productos.importar.vista-previa');
+        Route::post('/productos/importar', [ImportacionCatalogoController::class, 'store'])->name('productos.importar.store');
+
+        // HU10: botón "Recalcular" del punto de reorden
+        Route::post('/productos/recalcular-reorden', PuntoReordenController::class)->name('productos.recalcular-reorden');
+
+        // HU17: botón "Recalcular ABC" (valor vendido en los últimos 90 días)
+        Route::post('/productos/recalcular-abc', ClasificacionAbcController::class)->name('productos.recalcular-abc');
+
         Route::get('/movimientos', [MovimientoController::class, 'index'])->name('movimientos.index');
+
+        // HU08: gestión de usuarios y roles
+        Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+        Route::get('/usuarios/crear', [UsuarioController::class, 'create'])->name('usuarios.create');
+        Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
+        Route::get('/usuarios/{usuario}/editar', [UsuarioController::class, 'edit'])->name('usuarios.edit');
+        Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+        Route::patch('/usuarios/{usuario}/estado', [UsuarioController::class, 'toggle'])->name('usuarios.toggle');
+        Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
+
+        // HU09: gestión de proveedores
+        Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
+        Route::get('/proveedores/crear', [ProveedorController::class, 'create'])->name('proveedores.create');
+        Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+        Route::get('/proveedores/{proveedor}/editar', [ProveedorController::class, 'edit'])->name('proveedores.edit');
+        Route::put('/proveedores/{proveedor}', [ProveedorController::class, 'update'])->name('proveedores.update');
+        Route::patch('/proveedores/{proveedor}/estado', [ProveedorController::class, 'toggle'])->name('proveedores.toggle');
+        Route::delete('/proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+
+        // HU11: órdenes de compra sugeridas (borrador → enviada → recibida)
+        Route::get('/ordenes-compra', [OrdenCompraController::class, 'index'])->name('ordenes-compra.index');
+        Route::post('/ordenes-compra/sugerir', [OrdenCompraController::class, 'sugerir'])->name('ordenes-compra.sugerir');
+        Route::get('/ordenes-compra/{orden}', [OrdenCompraController::class, 'show'])->whereNumber('orden')->name('ordenes-compra.show');
+        Route::put('/ordenes-compra/{orden}', [OrdenCompraController::class, 'update'])->name('ordenes-compra.update');
+        Route::patch('/ordenes-compra/{orden}/enviar', [OrdenCompraController::class, 'enviar'])->name('ordenes-compra.enviar');
+
+        // HU15: tablero de indicadores (M1.1, M1.2, M2 y M3)
+        Route::get('/indicadores', IndicadorController::class)->name('indicadores.index');
     });
 
-    // HU03: recepción y HU06: alertas -> administrador y bodeguero
+    // HU03: recepción, HU06: alertas, HU12: lotes por vencer, HU13: mermas y HU14: conteo cíclico -> administrador y bodeguero
     Route::middleware('rol:administrador,bodeguero')->group(function () {
         Route::get('/recepciones', [RecepcionController::class, 'index'])->name('recepciones.index');
         Route::get('/recepciones/crear', [RecepcionController::class, 'create'])->name('recepciones.create');
         Route::post('/recepciones', [RecepcionController::class, 'store'])->name('recepciones.store');
+        Route::get('/recepciones/{recepcion}', [RecepcionController::class, 'show'])->whereNumber('recepcion')->name('recepciones.show');
 
         Route::get('/alertas', [AlertaController::class, 'index'])->name('alertas.index');
+        Route::get('/lotes/por-vencer', [LoteController::class, 'porVencer'])->name('lotes.por-vencer');
+
+        // HU13: registro de mermas
+        Route::get('/mermas', [MermaController::class, 'index'])->name('mermas.index');
+        Route::get('/mermas/crear', [MermaController::class, 'create'])->name('mermas.create');
+        Route::post('/mermas', [MermaController::class, 'store'])->name('mermas.store');
+
+        // HU14: conteo cíclico por clase ABC (A semanal, B quincenal, C mensual) y ajustes
+        Route::get('/conteos', [ConteoController::class, 'index'])->name('conteos.index');
+        Route::get('/conteos/crear', [ConteoController::class, 'create'])->name('conteos.create');
+        Route::post('/conteos', [ConteoController::class, 'store'])->name('conteos.store');
+        Route::get('/conteos/{conteo}', [ConteoController::class, 'show'])->whereNumber('conteo')->name('conteos.show');
     });
 
     // HU04: ventas -> administrador y vendedor
