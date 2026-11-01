@@ -11,6 +11,7 @@
         body { background: #f4f6f8; }
         .navbar-brand { font-weight: 700; letter-spacing: .02em; }
         .navbar .nav-link { white-space: nowrap; }
+        @media (min-width: 992px) and (max-width: 1199.98px) { .navbar-nav > .nav-item > .nav-link > .bi { display: none; } }
         .card { border: 0; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
         .kpi { font-size: 2rem; font-weight: 700; }
         .table td, .table th { vertical-align: middle; }
@@ -54,8 +55,13 @@
                             <li><a class="dropdown-item @if(request()->routeIs('proveedores.*')) active @endif" href="{{ route('proveedores.index') }}"><i class="bi bi-building"></i> Proveedores</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('indicadores.*')) active @endif" href="{{ route('indicadores.index') }}"><i class="bi bi-graph-up"></i> Indicadores</a></li>
-                    <li class="nav-item"><a class="nav-link @if(request()->routeIs('usuarios.*')) active @endif" href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle @if(request()->routeIs('indicadores.*', 'usuarios.*')) active @endif" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-gear"></i> Administración</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item @if(request()->routeIs('indicadores.*')) active @endif" href="{{ route('indicadores.index') }}"><i class="bi bi-graph-up"></i> Indicadores</a></li>
+                            <li><a class="dropdown-item @if(request()->routeIs('usuarios.*')) active @endif" href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a></li>
+                        </ul>
+                    </li>
                 @endif
             </ul>
             <ul class="navbar-nav">
