@@ -4,7 +4,7 @@ name: Pruebas
 # Una rama solo se integra si este flujo termina en verde (control de calidad, plan 3.5).
 on:
   push:
-    branches: [main, develop, 'feature/**']
+    branches: [main, develop, 'feature/**', 'chore/**']
   pull_request:
     branches: [main, develop]
 
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: mbstring, pdo_sqlite, sqlite3
           coverage: none
       - name: Instalar dependencias
@@ -25,6 +25,10 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+      - name: Verificar versiones (PHP 8.4 y PHPUnit 13)
+        run: |
+          php -r 'echo "PHP ", PHP_VERSION, PHP_EOL; exit(PHP_VERSION_ID >= 80400 ? 0 : 1);'
+          vendor/bin/phpunit --version | tee /dev/stderr | grep -q '^PHPUnit 13\.'
       - name: Ejecutar pruebas
         shell: bash
         run: |
@@ -58,7 +62,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: mbstring, pdo_mysql
           coverage: none
       - name: Instalar dependencias
@@ -67,6 +71,10 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+      - name: Verificar versiones (PHP 8.4 y PHPUnit 13)
+        run: |
+          php -r 'echo "PHP ", PHP_VERSION, PHP_EOL; exit(PHP_VERSION_ID >= 80400 ? 0 : 1);'
+          vendor/bin/phpunit --version | tee /dev/stderr | grep -q '^PHPUnit 13\.'
       - name: Ejecutar pruebas sobre MySQL
         # Las variables DB_* del job tienen prioridad: PHPUnit no sobrescribe variables ya definidas
         shell: bash
