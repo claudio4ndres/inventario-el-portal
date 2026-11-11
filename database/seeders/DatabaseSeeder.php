@@ -43,6 +43,11 @@ class DatabaseSeeder extends Seeder
         $azucar = $p('7801555000202', 'Azúcar 1 kg', 1290, 6, 'C');
         $p('7801234567892', 'Cecina jamón 250 g', 2490, 4, 'C');   // sin stock -> aparece en alertas
 
+        // M2: lista fija de alta rotación acordada con el administrador (entrevista del 16-10-2026)
+        foreach ([$leche, $huevos, $bebida, $panMolde, $arroz, $fideos, $azucar] as $producto) {
+            $producto->update(['alta_rotacion' => true]);
+        }
+
         // HU10: parámetros de reposición de ejemplo (el lácteo llega cada 2 días; el abarrote, semanal)
         $leche->update(['dias_reposicion' => 2, 'stock_seguridad' => 10]);
         $huevos->update(['dias_reposicion' => 3, 'stock_seguridad' => 5]);
