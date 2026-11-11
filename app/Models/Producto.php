@@ -15,7 +15,7 @@ class Producto extends Model
 
     protected $fillable = [
         'codigo_barras', 'nombre', 'precio_venta', 'punto_reorden', 'dias_reposicion', 'stock_seguridad',
-        'clase_abc', 'activo',
+        'clase_abc', 'alta_rotacion', 'activo',
     ];
 
     protected function casts(): array
@@ -25,6 +25,7 @@ class Producto extends Model
             'punto_reorden' => 'integer',
             'dias_reposicion' => 'integer',   // HU10
             'stock_seguridad' => 'integer',   // HU10
+            'alta_rotacion' => 'boolean',   // M2: lista fija de alta rotación
             'activo' => 'boolean',
         ];
     }

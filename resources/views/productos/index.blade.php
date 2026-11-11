@@ -44,7 +44,7 @@
             <td class="text-end">${{ number_format($p->precio_venta, 0, ',', '.') }}</td>
             <td class="text-end fw-bold">{{ $stock }}</td>
             <td class="text-end">{{ $p->punto_reorden }}</td>
-            <td><span class="badge bg-secondary">{{ $p->clase_abc }}</span></td>
+            <td><span class="badge bg-secondary">{{ $p->clase_abc }}</span>@if($p->alta_rotacion) <span class="badge bg-info text-dark" title="Lista de alta rotación (M2)">AR</span>@endif</td>
             <td>
                 @if(! $p->activo)<span class="badge bg-dark">Inactivo</span>
                 @elseif($p->punto_reorden > 0 && $stock <= $p->punto_reorden)<span class="badge bg-danger">Bajo mínimo</span>

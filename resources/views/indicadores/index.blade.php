@@ -32,7 +32,7 @@
         <div class="card p-3 h-100 {{ $m2['total'] > 0 ? 'border border-danger' : '' }}" id="m2">
             <div class="text-muted small">M2 · Quiebres de alta rotación</div>
             <div class="kpi {{ $m2['total'] > 0 ? 'text-danger' : '' }}">{{ $m2['total'] }}</div>
-            <div class="small text-muted">Veces que un producto de clase {{ \App\Services\IndicadorService::CLASE_ALTA_ROTACION }} quedó con stock 0 en 4 semanas (K3).</div>
+            <div class="small text-muted">Días-producto en que un producto de la lista de alta rotación estuvo sin stock en algún momento del día, en 4 semanas (K3).</div>
         </div>
     </div>
     <div class="col-md-6 col-xl-3">
@@ -47,7 +47,7 @@
 <div class="row g-3">
     <div class="col-lg-8">
         <div class="card p-3 h-100">
-            <h2 class="h5">Quiebres de stock por semana (clase {{ \App\Services\IndicadorService::CLASE_ALTA_ROTACION }})</h2>
+            <h2 class="h5">Quiebres de stock por semana (días-producto, lista de alta rotación)</h2>
             <div class="d-flex align-items-end gap-3 mt-3" style="height: 220px" id="grafico-quiebres">
                 @foreach($m2['semanas'] as $semana)
                     <div class="flex-fill d-flex flex-column justify-content-end align-items-center h-100">
@@ -55,7 +55,7 @@
                         <div class="w-100 rounded-top {{ $semana->quiebres > 0 ? 'bg-danger' : 'bg-secondary-subtle' }}"
                              style="height: {{ $semana->quiebres > 0 ? round($semana->quiebres / $maximoSemanal * 100) : 2 }}%"
                              data-quiebres="{{ $semana->quiebres }}"
-                             title="{{ $semana->quiebres }} quiebre(s)"></div>
+                             title="{{ $semana->quiebres }} día(s)-producto con quiebre"></div>
                         <div class="small text-muted text-center mt-2 text-nowrap">{{ $semana->desde->format('d-m') }} al {{ $semana->hasta->format('d-m') }}</div>
                     </div>
                 @endforeach
