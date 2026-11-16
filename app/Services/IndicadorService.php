@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Conteo;
 use App\Models\Movimiento;
+use App\Models\Producto;
 use App\Models\Venta;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,9 +24,6 @@ class IndicadorService
 
     /** M1.2 usa 30 días, el mismo período de la pantalla de conteos (cubre el ciclo mensual de la clase C). */
     public const DIAS_EXACTITUD = 30;
-
-    /** Clase ABC que se considera de alta rotación para el indicador de quiebres (M2). */
-    public const CLASE_ALTA_ROTACION = 'A';
 
     /**
      * Calcula los cuatro indicadores y la serie semanal de quiebres.
@@ -78,42 +76,77 @@ class IndicadorService
     }
 
     /**
-     * M2 (K3): quiebres de stock de los productos de alta rotación (clase A).
+     * M2 (K3): quiebres de stock de la lista fija de alta rotación (informe, sección 2.5.3).
      *
-     * Un quiebre es un movimiento de salida (venta, merma o ajuste) que deja el stock del
-     * producto en 0. Solo el último lote consumido queda con stock resultante 0, por lo que
-     * una venta que toma varios lotes cuenta una sola vez.
+     * Se cuenta un quiebre por producto y por día (día-producto): un producto marcado como de
+     * alta rotación tiene un quiebre en un día si estuvo sin stock en algún momento de ese día,
+     * es decir, si amaneció con stock 0 o si una salida (venta, merma o ajuste) lo dejó en 0.
+     * Es la misma definición de la planilla manual de la línea base, por lo que ambas mediciones
+     * son comparables. Un producto que nunca ha tenido movimientos todavía no tiene stock que
+     * medir (por ejemplo, antes de su primera recepción) y no cuenta.
      *
      * @return array{total: int, semanas: Collection<int, object{desde: CarbonInterface, hasta: CarbonInterface, quiebres: int}>, productos: Collection<int, object{nombre: string, quiebres: int}>}
      */
     public function quiebresAltaRotacion(CarbonInterface $desde): array
     {
-        $quiebres = Movimiento::query()
-            ->with('producto:id,nombre')
-            ->where('tipo', '<>', Movimiento::ENTRADA)
-            ->where('stock_resultante', 0)
+        $desde = $desde->copy()->startOfDay();
+        $hoy = today();
+        $productos = Producto::query()->where('alta_rotacion', true)->where('activo', true)->get(['id', 'nombre']);
+        $ids = $productos->pluck('id');
+
+        // Stock con que cada producto llega al período: el del último movimiento anterior
+        $stockInicial = Movimiento::query()
+            ->whereIn('id', Movimiento::query()
+                ->selectRaw('max(id)')
+                ->whereIn('producto_id', $ids)
+                ->where('created_at', '<', $desde)
+                ->groupBy('producto_id'))
+            ->pluck('stock_resultante', 'producto_id');
+
+        $movimientos = Movimiento::query()
+            ->whereIn('producto_id', $ids)
             ->where('created_at', '>=', $desde)
-            ->whereHas('producto', fn (Builder $q) => $q->where('clase_abc', self::CLASE_ALTA_ROTACION))
-            ->get(['id', 'producto_id', 'created_at']);
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->get(['id', 'producto_id', 'tipo', 'stock_resultante', 'created_at'])
+            ->groupBy(fn (Movimiento $m) => $m->producto_id.'|'.$m->created_at->toDateString());
+
+        // Días con quiebre de cada producto, recorriendo el período día a día
+        $dias = collect();
+        foreach ($productos as $producto) {
+            $stock = $stockInicial->has($producto->id) ? (int) $stockInicial->get($producto->id) : null;   // null: aún sin movimientos
+            for ($dia = $desde->copy(); $dia->lte($hoy); $dia->addDay()) {
+                $delDia = $movimientos->get($producto->id.'|'.$dia->toDateString(), collect());
+                $amanecioSinStock = $stock === 0;
+                $quedoEnCero = $delDia->contains(fn (Movimiento $m) => $m->tipo !== Movimiento::ENTRADA && (int) $m->stock_resultante === 0);
+                if ($amanecioSinStock || $quedoEnCero) {
+                    $dias->push((object) ['producto_id' => $producto->id, 'dia' => $dia->copy()]);
+                }
+                if ($delDia->isNotEmpty()) {
+                    $stock = (int) $delDia->last()->stock_resultante;
+                }
+            }
+        }
 
         // Serie para el gráfico: una barra por semana, de la más antigua a la actual
-        $semanas = collect(range(0, self::SEMANAS - 1))->map(function (int $i) use ($desde, $quiebres) {
+        $semanas = collect(range(0, self::SEMANAS - 1))->map(function (int $i) use ($desde, $dias) {
             $inicio = $desde->copy()->addDays($i * 7);
             $fin = $inicio->copy()->addDays(7);
 
             return (object) [
                 'desde' => $inicio,
                 'hasta' => $fin->copy()->subDay(),
-                'quiebres' => $quiebres->filter(fn (Movimiento $m) => $m->created_at->gte($inicio) && $m->created_at->lt($fin))->count(),
+                'quiebres' => $dias->filter(fn (object $d) => $d->dia->gte($inicio) && $d->dia->lt($fin))->count(),
             ];
         });
 
-        $productos = $quiebres->groupBy('producto_id')
-            ->map(fn (Collection $grupo) => (object) ['nombre' => $grupo->first()->producto->nombre, 'quiebres' => $grupo->count()])
+        $nombres = $productos->pluck('nombre', 'id');
+        $porProducto = $dias->groupBy('producto_id')
+            ->map(fn (Collection $grupo, int $id) => (object) ['nombre' => $nombres[$id], 'quiebres' => $grupo->count()])
             ->sortByDesc('quiebres')
             ->values();
 
-        return ['total' => $quiebres->count(), 'semanas' => $semanas, 'productos' => $productos];
+        return ['total' => $dias->count(), 'semanas' => $semanas, 'productos' => $porProducto];
     }
 
     /**

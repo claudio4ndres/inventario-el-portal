@@ -60,6 +60,13 @@
             <div class="form-text mb-2"><i class="bi bi-calculator"></i> Punto de reorden = (ventas de los últimos 28 días ÷ 28) × días de reposición + stock de seguridad.</div>
         </div>
         <div class="col-12">
+            <input type="hidden" name="alta_rotacion" value="0">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="alta_rotacion" name="alta_rotacion" value="1" @checked(old('alta_rotacion', $producto->alta_rotacion ?? false))>
+                <label class="form-check-label" for="alta_rotacion">Alta rotación (lista fija para medir los quiebres, M2)</label>
+            </div>
+        </div>
+        <div class="col-12">
             <input type="hidden" name="activo" value="0">
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="activo" name="activo" value="1" @checked(old('activo', $producto->activo ?? true))>

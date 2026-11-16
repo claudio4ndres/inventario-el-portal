@@ -50,6 +50,7 @@ erDiagram
         int dias_reposicion "HU10"
         int stock_seguridad "HU10"
         char clase_abc "A|B|C"
+        bool alta_rotacion "lista fija M2"
         bool activo
     }
     PROVEEDORES {
@@ -161,6 +162,7 @@ erDiagram
 | productos | dias_reposicion | smallint unsigned | ≥ 1, por defecto 3 | Días que tarda el proveedor en reponer (HU10) |
 | productos | stock_seguridad | int unsigned | ≥ 0, por defecto 0 | Unidades extra ante atrasos o alzas de demanda (HU10) |
 | productos | clase_abc | char(1) | A, B o C | Prioridad de control |
+| productos | alta_rotacion | boolean | por defecto false | Lista fija de alta rotación para el indicador de quiebres M2 (no cambia con el recálculo ABC) |
 | lotes | fecha_vencimiento | date | NULL permitido | NULL indica un producto no perecible |
 | lotes | cantidad_disponible | int unsigned | ≥ 0 | Saldo del lote; la suma de todos los lotes es el stock |
 | movimientos | tipo | varchar(10) | ENTRADA, SALIDA, AJUSTE o MERMA | Naturaleza del movimiento |

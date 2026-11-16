@@ -153,8 +153,8 @@ class FlujoIntegracionTest extends TestCase
      */
     public function test_flujo_de_control_de_perdidas_se_refleja_en_los_indicadores(): void
     {
-        $queso = Producto::factory()->create(['nombre' => 'Queso gauda 250 g', 'precio_venta' => 2500, 'clase_abc' => 'A']);
-        $pan = Producto::factory()->create(['nombre' => 'Pan molde', 'precio_venta' => 1800, 'clase_abc' => 'A']);
+        $queso = Producto::factory()->create(['nombre' => 'Queso gauda 250 g', 'precio_venta' => 2500, 'clase_abc' => 'A', 'alta_rotacion' => true]);
+        $pan = Producto::factory()->create(['nombre' => 'Pan molde', 'precio_venta' => 1800, 'clase_abc' => 'A', 'alta_rotacion' => true]);
         $proveedor = Proveedor::factory()->create();
         $this->recibir($queso, $proveedor, 6, 'Q-VENCE', 3, 1500);
         $this->recibir($queso, $proveedor, 10, 'Q-NUEVO', 60, 1500);
@@ -172,7 +172,7 @@ class FlujoIntegracionTest extends TestCase
         ])->assertSessionHasNoErrors()->assertRedirect('/mermas');
         $this->assertSame(9000, (int) Movimiento::where('tipo', Movimiento::MERMA)->sum('costo_total'));
 
-        // Ventas del período: 2 quesos (5.000) y todo el pan (quiebre de un producto clase A)
+        // Ventas del período: 2 quesos (5.000) y todo el pan (quiebre de un producto de alta rotación)
         $this->vender($queso, 2);
         $this->vender($pan, 4);
 
@@ -190,7 +190,7 @@ class FlujoIntegracionTest extends TestCase
         $indicadores = app(IndicadorService::class)->calcular();
         $this->assertSame(2, $indicadores['m11']['ventas']);
         $this->assertSame(50.0, $indicadores['m12']['exactitud']);         // 1 de 2 productos con diferencia
-        $this->assertSame(1, $indicadores['m2']['total']);                  // el pan llegó a 0
+        $this->assertSame(1, $indicadores['m2']['total']);                  // el pan llegó a 0 hoy: 1 día-producto
         $this->assertSame(['merma' => 9000, 'ventas' => 12200, 'porcentaje' => 73.8], $indicadores['m3']);
 
         $this->actingAs($this->admin)->get('/indicadores')->assertOk()->assertSee('Pan molde');

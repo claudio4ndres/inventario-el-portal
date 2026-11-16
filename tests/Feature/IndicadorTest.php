@@ -159,53 +159,102 @@ class IndicadorTest extends TestCase
             ->assertSeeInOrder(['id="m12"', '80,0 %', 'últimos 30 días'], false);
     }
 
-    public function test_m2_cuenta_los_quiebres_de_clase_a_por_semana(): void
+    public function test_m2_cuenta_dias_producto_sin_stock_de_la_lista_de_alta_rotacion(): void
     {
         $inventario = app(InventarioService::class);
-        $leche = Producto::factory()->create(['nombre' => 'Leche entera 1 L', 'clase_abc' => 'A']);
-        $huevos = Producto::factory()->create(['nombre' => 'Huevos 12 un.', 'clase_abc' => 'A']);
-        $pan = Producto::factory()->create(['nombre' => 'Pan de molde', 'clase_abc' => 'B']);
+        $leche = Producto::factory()->create(['nombre' => 'Leche entera 1 L', 'alta_rotacion' => true]);
+        $huevos = Producto::factory()->create(['nombre' => 'Huevos 12 un.', 'alta_rotacion' => true]);
+        // Clase A pero fuera de la lista fija: la clase ABC cambia con las ventas, la lista no
+        $pan = Producto::factory()->create(['nombre' => 'Pan de molde', 'clase_abc' => 'A']);
 
-        // Quiebre anterior al período (27-09): no cuenta
+        // Antes del período (27-09) la leche se agota: llega al período (29-09) sin stock
         $this->travelTo(Carbon::parse('2026-09-25 09:00'));
         $this->lote($leche, 'LE-01', 5);
         $this->travelTo(Carbon::parse('2026-09-27 09:00'));
         $this->vender($leche, 5);
 
-        // Semana 1 (01-10): una venta que vacía dos lotes cuenta como un solo quiebre
+        // 30-09 se repone y 01-10 una venta vacía dos lotes: un solo día con quiebre ese día.
+        // La leche sigue sin stock hasta la recepción del 20-10 (día con quiebre: amaneció en 0)
         $this->travelTo(Carbon::parse('2026-09-30 09:00'));
         $this->lote($leche, 'LE-02', 2, 500, '2026-10-10');
         $this->lote($leche, 'LE-03', 3, 500, '2026-10-20');
         $this->travelTo(Carbon::parse('2026-10-01 09:00'));
         $this->vender($leche, 5);
 
-        // Semana 2: un producto de clase B que queda en 0 no es de alta rotación
+        // El pan (fuera de la lista) queda en 0: no cuenta
         $this->travelTo(Carbon::parse('2026-10-07 09:00'));
         $this->lote($pan, 'PM-01', 2);
         $this->vender($pan, 2);
 
-        // Semana 4 (24-10): una merma que deja la leche en 0 también es un quiebre
+        // 20-10 llega leche y llegan los primeros huevos (sin historial previo: no cuentan antes)
         $this->travelTo(Carbon::parse('2026-10-20 09:00'));
         $loteMerma = $this->lote($leche, 'LE-04', 4);
         $this->lote($huevos, 'HU-01', 6);
+        // 24-10 una merma deja la leche en 0 y sigue así hasta hoy (24, 25 y 26-10)
         $this->travelTo(Carbon::parse('2026-10-24 09:00'));
         $inventario->registrarMerma(User::factory()->bodeguero()->create(), $loteMerma->id, 4, 'vencimiento');
         $this->vender($huevos, 2);   // queda stock: no es quiebre
+        $this->vender($huevos, 2);   // dos ventas el mismo día tampoco suman días
 
         $this->travelTo(Carbon::parse(self::HOY));
         $m2 = app(IndicadorService::class)->calcular()['m2'];
 
-        $this->assertSame(2, $m2['total']);
-        $this->assertSame([1, 0, 0, 1], $m2['semanas']->pluck('quiebres')->all());
+        // Semana 1 (29-09 al 05-10): 7 días; semanas 2 y 3: 7 cada una; semana 4: 20, 24, 25 y 26-10
+        $this->assertSame(25, $m2['total']);
+        $this->assertSame([7, 7, 7, 4], $m2['semanas']->pluck('quiebres')->all());
         $this->assertSame(['2026-09-29', '2026-10-06', '2026-10-13', '2026-10-20'], $m2['semanas']->map(fn ($s) => $s->desde->toDateString())->all());
-        $this->assertSame([['Leche entera 1 L', 2]], $m2['productos']->map(fn ($p) => [$p->nombre, $p->quiebres])->all());
+        $this->assertSame([['Leche entera 1 L', 25]], $m2['productos']->map(fn ($p) => [$p->nombre, $p->quiebres])->all());
 
         $this->actingAs(User::factory()->administrador()->create())->get('/indicadores')
-            ->assertSeeInOrder(['id="m2"', '2'], false)
-            ->assertSeeInOrder(['data-quiebres="1"', 'data-quiebres="0"', 'data-quiebres="0"', 'data-quiebres="1"'], false)
+            ->assertSeeInOrder(['id="m2"', '25'], false)
+            ->assertSeeInOrder(['data-quiebres="7"', 'data-quiebres="7"', 'data-quiebres="7"', 'data-quiebres="4"'], false)
             ->assertSeeInOrder(['29-09 al 05-10', '06-10 al 12-10', '13-10 al 19-10', '20-10 al 26-10'])
             ->assertSee('Leche entera 1 L')
             ->assertDontSee('Pan de molde');
+    }
+
+    public function test_m2_un_producto_que_se_agota_y_se_repone_el_mismo_dia_cuenta_un_dia(): void
+    {
+        $arroz = Producto::factory()->create(['nombre' => 'Arroz 1 kg', 'alta_rotacion' => true]);
+        $this->travelTo(Carbon::parse('2026-10-26 08:00'));
+        $this->lote($arroz, 'AR-01', 3);
+        $this->travelTo(Carbon::parse('2026-10-26 09:00'));
+        $this->vender($arroz, 3);
+        $this->travelTo(Carbon::parse('2026-10-26 09:30'));
+        $this->lote($arroz, 'AR-02', 10);
+
+        $this->travelTo(Carbon::parse(self::HOY));
+        $m2 = app(IndicadorService::class)->calcular()['m2'];
+
+        $this->assertSame(1, $m2['total']);
+        $this->assertSame([0, 0, 0, 1], $m2['semanas']->pluck('quiebres')->all());
+    }
+
+    public function test_el_administrador_marca_un_producto_como_de_alta_rotacion(): void
+    {
+        $producto = Producto::factory()->create(['nombre' => 'Fideos 400 g']);
+
+        $this->actingAs(User::factory()->administrador()->create())->put(route('productos.update', $producto), [
+            'codigo_barras' => $producto->codigo_barras,
+            'nombre' => $producto->nombre,
+            'precio_venta' => $producto->precio_venta,
+            'punto_reorden' => $producto->punto_reorden,
+            'clase_abc' => 'C',
+            'alta_rotacion' => '1',
+            'activo' => '1',
+        ])->assertSessionHasNoErrors();
+        $this->assertTrue($producto->fresh()->alta_rotacion);
+
+        // Una edición que no envía el campo conserva la marca
+        $this->put(route('productos.update', $producto), [
+            'codigo_barras' => $producto->codigo_barras,
+            'nombre' => 'Fideos spaghetti 400 g',
+            'precio_venta' => $producto->precio_venta,
+            'punto_reorden' => $producto->punto_reorden,
+            'clase_abc' => 'C',
+            'activo' => '1',
+        ])->assertSessionHasNoErrors();
+        $this->assertTrue($producto->fresh()->alta_rotacion);
     }
 
     public function test_m3_es_la_merma_por_vencimiento_a_costo_sobre_el_monto_vendido(): void
