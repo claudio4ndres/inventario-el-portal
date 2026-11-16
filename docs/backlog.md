@@ -73,7 +73,7 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - Al menos 4 indicadores actualizados en las últimas 24 horas:
   - M1.1: % de ventas con descuento automático.
   - M1.2: exactitud de inventario.
-  - M2: quiebres de productos de alta rotación en las últimas 4 semanas.
+  - M2: quiebres de productos de alta rotación en las últimas 4 semanas, contados como días-producto sin stock sobre la lista fija acordada con el administrador (ajuste del 11-11-2026).
   - M3: merma por vencimiento sobre las ventas.
 - Gráfico simple de quiebres por semana.
 
@@ -101,3 +101,4 @@ Este archivo es la **fuente de verdad del avance**. La rutina diaria de desarrol
 - 28-10-2026: HU16 (importación del catálogo inicial desde CSV con separador punto y coma o coma, vista previa con errores fila por fila, códigos repetidos en el archivo detectados, filas válidas importadas en una transacción y actualización del producto si el código ya existe; plantilla descargable) integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (138 pruebas en total; 10 nuevas). Sin cambios de esquema.
 - 29-10-2026: HU17 (clasificación ABC automática por valor vendido en los últimos 90 días: A hasta el 80 % acumulado, B hasta el 95 % y C el resto, con el producto que cruza el umbral en la clase superior; sin ventas no se modifica nada; comando `inventario:recalcular-abc` y botón "Recalcular ABC") integrada en `develop` con la CI en verde en SQLite y MySQL 8.4 (150 pruebas en total; 12 nuevas). Sin cambios de esquema. Backlog completo: MPV listo para el hito H4.
 - 31-10-2026: pruebas de integración del MPV (issue #27): cuatro flujos de punta a punta por HTTP con los tres roles (abastecimiento desde el catálogo CSV hasta la recepción contra OC; venta FEFO con rechazo atómico; control de pérdidas reflejado en los indicadores; recálculo de punto de reorden y clase ABC alimentando alertas y conteos), matriz de acceso por rol en las 21 pantallas y verificación de cuadratura entre lotes y bitácora. CI en verde en SQLite y MySQL 8.4 (159 pruebas en total; 9 nuevas). Línea base LB-4 liberada en `main` con el tag `v1.0.0` (CC-03).
+- 11-11-2026: ajuste del indicador M2 para que sea comparable con la línea base manual: lista fija de alta rotación (columna `productos.alta_rotacion`, editable en el mantenedor) y conteo por día-producto (un producto cuenta un quiebre el día en que estuvo sin stock en algún momento).

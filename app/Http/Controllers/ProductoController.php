@@ -108,6 +108,10 @@ class ProductoController extends Controller
             'clase_abc' => ['required', Rule::in(['A', 'B', 'C'])],
         ]);
         $datos['activo'] = $request->boolean('activo', true);
+        // M2: solo cambia si el formulario envía el campo; así no se pierde al editar desde otra pantalla
+        if ($request->has('alta_rotacion')) {
+            $datos['alta_rotacion'] = $request->boolean('alta_rotacion');
+        }
 
         return $datos;
     }

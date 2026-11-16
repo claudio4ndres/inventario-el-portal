@@ -22,6 +22,7 @@ class ProductoFactory extends Factory
             'dias_reposicion' => 3,
             'stock_seguridad' => 0,
             'clase_abc' => 'C',
+            'alta_rotacion' => false,
             'activo' => true,
         ];
     }
