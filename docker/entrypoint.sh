@@ -19,8 +19,9 @@ if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
 fi
 
 if [ "${DEMO_RESET:-true}" = "true" ]; then
-  # Demo local: base limpia con datos ficticios en cada inicio
-  php artisan migrate:fresh --seed --force --no-interaction
+  # Demo local o ambiente de pruebas: base limpia con datos ficticios en cada inicio.
+  # DEMO_SEEDER=EscenarioPruebaSeeder carga 28 días simulados (quiebres, mermas, conteos).
+  php artisan migrate:fresh --seed --seeder="${DEMO_SEEDER:-DatabaseSeeder}" --force --no-interaction
 else
   # Producción: solo aplica las migraciones nuevas, nunca borra datos
   php artisan migrate --force --no-interaction
