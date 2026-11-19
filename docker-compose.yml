@@ -7,5 +7,6 @@ services:
       - "8000:8000"
     environment:
       DEMO_RESET: "true"   # "false" conserva los datos entre reinicios (con el volumen de abajo)
+      # DEMO_SEEDER: "EscenarioPruebaSeeder"   # 28 días simulados para probar quiebres y mermas
     # volumes:
     #   - ./database/database.sqlite:/app/database/database.sqlite
