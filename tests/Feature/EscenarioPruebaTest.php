@@ -60,6 +60,34 @@ class EscenarioPruebaTest extends TestCase
         $this->assertLessThan(100.0, $indicadores['m12']['exactitud']);
     }
 
+    /**
+     * Valores esperados del tablero con el escenario cargado (docs/escenario-pruebas.md).
+     * Sirven para verificar el tablero en el ambiente de pruebas (H5, CC-05).
+     */
+    public function test_los_indicadores_del_escenario_tienen_los_valores_esperados(): void
+    {
+        $this->seed(EscenarioPruebaSeeder::class);
+
+        $i = app(IndicadorService::class)->calcular();
+
+        // M1.1: 434 ventas, todas con descuento automático por lote
+        $this->assertSame(['ventas' => 434, 'con_descuento' => 434, 'porcentaje' => 100.0], $i['m11']);
+
+        // M1.2: 4 conteos de la clase A; una diferencia (bebida, día 13) en 12 productos contados
+        $this->assertSame(91.7, $i['m12']['exactitud']);
+
+        // M2: 20 días-producto sin stock; la semana 2 concentra los quiebres de la leche
+        $this->assertSame(20, $i['m2']['total']);
+        $this->assertSame([4, 9, 4, 3], $i['m2']['semanas']->map(fn ($s) => $s->quiebres)->all());
+        $this->assertSame(
+            [['Fideos spaghetti 400 g', 11], ['Leche entera 1 L', 5], ['Pan de molde blanco', 4]],
+            $i['m2']['productos']->map(fn ($p) => [$p->nombre, $p->quiebres])->values()->all(),
+        );
+
+        // M3: merma por vencimiento de $19.460 sobre $1.801.210 vendidos
+        $this->assertSame(['merma' => 19460, 'ventas' => 1801210, 'porcentaje' => 1.1], $i['m3']);
+    }
+
     public function test_no_se_carga_sobre_una_base_con_datos(): void
     {
         User::factory()->administrador()->create(['email' => 'dueno@elportal.cl']);
