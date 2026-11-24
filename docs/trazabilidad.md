@@ -54,7 +54,7 @@ Todas las causas dentro del alcance tienen al menos un control implementado y un
 |-----|----------------|-----------|
 | RNF1 Lector de código de barras | El lector USB funciona como teclado; la búsqueda por código exacto agrega el producto (HU05) | `ProductoTest`, prueba manual con lector (issue #27) |
 | RNF2 Seguridad y bitácora | Contraseñas con hash, middleware `rol`, bitácora de movimientos con usuario | `AutenticacionTest`, `MatrizAccesoTest`, `AlertaYBitacoraTest` |
-| RNF3 Respaldo diario | Pendiente (issue #49) | — |
+| RNF3 Respaldo diario | Servicio cron `respaldo-mysql`: `mysqldump` diario a las 07:00 UTC, verificado y con los últimos 7 respaldos | `infra/respaldo/respaldo.sh`; [`docs/respaldo.md`](respaldo.md); simulacro de restauración en Railway del 24-11-2026 (#49) |
 | RNF4 PHP con soporte vigente | PHP 8.4 y PHPUnit 13; la CI verifica las versiones (CC-04) | Workflow `tests.yml`, PR #43 |
 
 ## Pruebas que cruzan varias HU

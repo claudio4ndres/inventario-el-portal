@@ -1,0 +1,31 @@
+﻿codigo_barras;nombre;precio_venta;punto_reorden;clase_abc
+2000000000010;Arroz grado 2 1 kg;1390;10;A
+2000000000020;Azúcar granulada 1 kg;1290;10;A
+2000000000030;Aceite vegetal 1 L;2490;8;A
+2000000000040;Fideos espirales 400 g;890;12;A
+2000000000050;Harina con polvos 1 kg;1290;6;B
+2000000000060;Sal de mesa 1 kg;590;4;C
+2000000000070;Té 100 bolsitas;2190;4;B
+2000000000080;Café instantáneo 170 g;4990;3;B
+2000000000090;Leche descremada 1 L;1150;12;A
+2000000000100;Yogur batido 125 g;390;20;A
+2000000000110;Mantequilla 250 g;2690;5;B
+2000000000120;Queso laminado 250 g;3290;5;B
+2000000000130;Jamón de pavo 200 g;2490;5;B
+2000000000140;Huevos blancos 12 unidades;3590;6;A
+2000000000150;Pan de molde integral;2190;6;A
+2000000000160;Galletas de vino 150 g;690;10;B
+2000000000170;Bebida cola 1,5 L;1790;12;A
+2000000000180;Agua mineral 1,6 L;990;10;A
+2000000000190;Jugo néctar durazno 1 L;1290;6;B
+2000000000200;Cerveza lata 470 ml;1090;12;A
+2000000000210;Atún lomitos en aceite 160 g;1690;6;B
+2000000000220;Porotos en tarro 380 g;1190;4;C
+2000000000230;Salsa de tomate 200 g;590;8;B
+2000000000240;Mayonesa 400 g;2190;4;B
+2000000000250;Detergente líquido 1 L;3490;3;C
+2000000000260;Lavaloza 750 ml;1690;4;C
+2000000000270;Papel higiénico 4 rollos;2390;5;B
+2000000000280;Cloro 1 L;990;4;C
+2000000000290;Pasta dental 90 g;1490;3;C
+2000000000300;Jabón de tocador 90 g;690;4;C
