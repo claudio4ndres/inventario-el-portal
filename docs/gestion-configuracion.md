@@ -17,6 +17,20 @@ La gestión de la configuración asegura que cada versión del producto y de su 
 | IC-09 | Informes y presentaciones | Google Drive | `/Proyecto/Entregas` | Autor |
 | IC-10 | Configuración de entornos (`.env.example`) | Git | raíz del repositorio | Autor |
 | IC-11 | Base de datos de producción (MySQL) | Servicio cron `respaldo-mysql` en Railway (`mysqldump` diario, últimos 7) | código en `infra/respaldo/`; procedimiento en [`docs/respaldo.md`](respaldo.md) | Autor |
+| IC-12 | Configuración de los servicios de Railway | Ajustes de cada servicio en Railway (registrados abajo) | proyecto `inventario-el-portal`, ambiente `production` | Autor |
+
+### Configuración de Railway
+
+Desde el 01-12-2026 Railway no lee `railway.json` ni `railway.toml` (CC-06). La configuración de cada servicio está en sus ajustes y se registra aquí. Si se cambia en Railway, se actualiza esta tabla en el mismo cambio.
+
+| Servicio | Origen | Construcción | Despliegue |
+|----------|--------|--------------|------------|
+| `web` | `main` | `Dockerfile` | Healthcheck `/up` (300 s); reinicio *On Failure*, 5 reintentos; dominio público, puerto 8000 |
+| `web-pruebas` | `develop` | `Dockerfile` | Healthcheck `/up` (300 s); reinicio *On Failure*, 5 reintentos; dominio público, puerto 8000 |
+| `respaldo-mysql` | `main`, raíz `/infra/respaldo` | `Dockerfile` | Cron `0 7 * * *`; reinicio *Never*; volumen `respaldos-volume` en `/respaldos` |
+| `MySQL` | imagen `mysql:8` | — | Volumen `mysql-volume` en `/var/lib/mysql` |
+
+Las variables de entorno de cada servicio están en el `README.md` (web) y en [`respaldo.md`](respaldo.md) (respaldo). Los secretos (`APP_KEY` y las contraseñas) quedan solo en Railway.
 
 **Nomenclatura de documentos:** `<curso>_<documento>_v<mayor>.<menor>_<AAAA-MM-DD>`. Por ejemplo, `AINC422_requerimientos_v2.0_2026-10-19`.
 
@@ -67,6 +81,7 @@ feature/hu-xx   ●     ●        ●──●             ← una rama por his
 | CC-03 | 31-10-2026 | Avance real: las 17 HU del MPV terminadas el 29-10-2026 (4 semanas antes de lo planificado) | Se adelanta la fase de pruebas y entrega del MPV: pruebas de integración (flujos de punta a punta y matriz de acceso) y liberación de la LB-4 (`v1.0.0`) el 31-10-2026 en lugar de S26 | H4 puede cerrarse antes del 10-12-2026; las semanas liberadas se destinan a la línea base de métricas (R8), a la revisión del código (R10) y a preparar el piloto (H5), cuya fecha no cambia | Aplicado; acta de H4 pendiente de firma (issue #27) |
 | CC-04 | 11-11-2026 | Actualización de la plataforma por seguridad (riesgo R11) | PHP 8.3 → 8.4 y PHPUnit 12 → 13 (`composer.json`, CI y Dockerfile); la CI verifica ambas versiones antes de ejecutar las pruebas | Sin cambios funcionales; se valida con la batería completa de pruebas en SQLite y MySQL 8.4; los entornos locales y del piloto deben usar PHP 8.4 | Aplicado (PR #43, 16-11-2026) |
 | CC-05 | 23-11-2026 | Riesgo R12 materializado: el almacén no tuvo disponibilidad para coordinar el piloto ni capacitar a los usuarios (issue #47) | H5 pasa de piloto en el local a validación en ambiente de pruebas: catálogo por importación CSV, escenario simulado de 28 días (servicio `web-pruebas`), prueba de aceptación guiada y manual de usuario; el piloto real queda como recomendación posterior (issues #48 y #49; #28 cerrada como no planificada) | OE5 parcialmente logrado; M2 y M3 se informan como verificación con datos simulados; fechas de H5 y H6 sin cambio | Pendiente de aprobación del profesor guía |
+| CC-06 | 24-11-2026 | Aviso de la plataforma: Railway deja de leer `railway.json` y `railway.toml` el 01-12-2026 (Config as Code) | La configuración de despliegue (Dockerfile, healthcheck `/up`, política de reinicio y cron del respaldo) pasa a los ajustes de cada servicio y se registra en la sección «Configuración de Railway»; se eliminan `railway.json` e `infra/respaldo/railway.toml` | Sin cambios funcionales; se verifica con un despliegue de cada servicio sin los archivos | Aplicado |
 
 ## 5. Auditoría de la configuración
 

@@ -86,12 +86,14 @@ flowchart LR
     D -.->|despliegue automático| WP["Railway: web-pruebas<br/>escenario simulado"]
     MA -->|despliegue automático| W["Railway: web<br/>producción, HTTPS"]
     W --> DB[("Railway: MySQL 8.4<br/>volumen persistente")]
+    R["Railway: respaldo-mysql<br/>cron diario 07:00 UTC"] -->|mysqldump, últimos 7| DB
     GA["GitHub Actions<br/>PHPUnit en SQLite y MySQL 8.4<br/>imagen Docker"] -.->|valida cada push y PR| D
     GA -.-> MA
 ```
 
-- **Producción (`web`):** se construye con el `Dockerfile` desde `main` (`railway.json`), con healthcheck en `/up`. Al iniciar, `docker/entrypoint.sh` aplica solo las migraciones nuevas (`DEMO_RESET=false`), cachea la configuración y levanta el planificador de tareas.
+- **Producción (`web`):** se construye con el `Dockerfile` desde `main`, con healthcheck en `/up` (configuración del servicio en Railway, ver [`docs/gestion-configuracion.md`](docs/gestion-configuracion.md#configuración-de-railway)). Al iniciar, `docker/entrypoint.sh` aplica solo las migraciones nuevas (`DEMO_RESET=false`), cachea la configuración y levanta el planificador de tareas.
 - **Ambiente de pruebas (`web-pruebas`):** se despliega desde `develop` con una base limpia y el escenario simulado de 28 días ([`docs/escenario-pruebas.md`](docs/escenario-pruebas.md)).
+- **Respaldo (`respaldo-mysql`):** servicio cron que cada día vuelca la base de producción con `mysqldump` y guarda los últimos 7 respaldos (RNF3, [`docs/respaldo.md`](docs/respaldo.md)).
 - **Integración continua:** `.github/workflows/tests.yml` ejecuta las pruebas en SQLite y MySQL 8.4 y verifica PHP 8.4 y PHPUnit 13; `.github/workflows/docker.yml` construye la imagen.
 
 ## Requisitos
@@ -122,10 +124,11 @@ docker run --rm -p 8000:8000 ghcr.io/claudio4ndres/inventario-el-portal:develop
 
 ## Publicar en Railway
 
-El repositorio trae `railway.json`: Railway construye el `Dockerfile` en sus servidores y revisa `/up` antes de dar tráfico.
+Railway construye el `Dockerfile` en sus servidores y revisa `/up` antes de dar tráfico. Esa configuración vive en los ajustes de cada servicio y no en el repositorio, porque Railway dejó de leer `railway.json` el 01-12-2026 (CC-06).
 
 1. Crear un proyecto con un servicio **MySQL** y un servicio desde este repositorio (rama `main`).
-2. Variables del servicio web:
+2. En *Settings* del servicio web: *Dockerfile Path* `Dockerfile`, *Healthcheck Path* `/up`, *Healthcheck Timeout* `300`, *Restart Policy* `On Failure` con 5 reintentos.
+3. Variables del servicio web:
 
 ```
 APP_ENV=production
@@ -145,7 +148,8 @@ DB_USERNAME=${{MySQL.MYSQLUSER}}
 DB_PASSWORD=${{MySQL.MYSQLPASSWORD}}
 ```
 
-3. Generar el dominio público del servicio web (puerto 8000).
+4. Generar el dominio público del servicio web (puerto 8000).
+5. Crear el servicio de respaldo según [`docs/respaldo.md`](docs/respaldo.md).
 
 Antes del piloto: cambiar las contraseñas de los usuarios de demostración y cargar el catálogo real con la importación CSV (HU16).
 
