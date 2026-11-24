@@ -17,7 +17,8 @@ respaldo-mysql (cron 07:00 UTC) ──red privada──▶ MySQL (base "railway"
 | Elemento | Valor |
 |----------|-------|
 | Servicio | `respaldo-mysql` (proyecto `inventario-el-portal`, ambiente `production`) |
-| Código | [`infra/respaldo/`](../infra/respaldo): `respaldo.sh`, `Dockerfile` (cliente de `mysql:8.4`) y `railway.toml` |
+| Código | [`infra/respaldo/`](../infra/respaldo): `respaldo.sh` y `Dockerfile` (cliente de `mysql:8.4`) |
+| Configuración del servicio | En Railway: raíz `/infra/respaldo`, `Dockerfile`, cron `0 7 * * *`, reinicio `NEVER`, volumen en `/respaldos` (ver [`gestion-configuracion.md`](gestion-configuracion.md#configuración-de-railway)) |
 | Horario | `0 7 * * *`: 07:00 UTC, que son las 04:00 en Chile en horario de verano y las 03:00 en invierno |
 | Qué respalda | Cada base de la aplicación en el servidor MySQL. Hoy es una sola: `railway`, la que usa el servicio `web` |
 | Dónde guarda | Volumen `respaldos-volume`, montado en `/respaldos`, separado del volumen de MySQL |
