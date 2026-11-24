@@ -11,6 +11,9 @@
 #              número de filas de cada tabla con la original y borra la temporal.
 #              Es la evidencia de que los respaldos se pueden restaurar.
 #   listar     muestra los respaldos guardados.
+#   restaurar  restaura RESPALDO_ARCHIVO (nombre de un archivo de RESPALDO_DIR)
+#              en su base original. Antes genera un respaldo nuevo, así que la
+#              restauración se puede deshacer restaurando ese respaldo.
 #
 # Variables requeridas: MYSQLHOST, MYSQLPORT, MYSQLUSER, MYSQLPASSWORD
 # (en Railway se toman del servicio MySQL con ${{MySQL.MYSQLHOST}}, etc.).
@@ -127,6 +130,39 @@ simulacro() {
     log "SIMULACRO OK: todas las tablas restauradas coinciden con la base original"
 }
 
+restaurar() {
+    : "${RESPALDO_ARCHIVO:?falta RESPALDO_ARCHIVO (nombre del archivo a restaurar)}"
+    local archivo="$DESTINO/$(basename "$RESPALDO_ARCHIVO")"
+    if [ ! -f "$archivo" ]; then
+        log "ERROR: no existe $archivo"
+        listar
+        exit 1
+    fi
+    # El nombre es <base>-<marca>.sql.gz; la base es todo lo anterior al último guion.
+    local db
+    db="$(basename "$archivo" .sql.gz)"
+    db="${db%-*}"
+    # Protección: si la variable RESPALDO_MODO=restaurar quedara configurada, el
+    # cron diario volvería a restaurar el mismo archivo y borraría los datos nuevos.
+    # Cada archivo se restaura una sola vez; después el modo hace un respaldo normal.
+    local marca_restaurado="$DESTINO/.restaurado-$(basename "$archivo")"
+    if [ -e "$marca_restaurado" ]; then
+        log "AVISO: $(basename "$archivo") ya se restauró el $(cat "$marca_restaurado"); se hace un respaldo normal."
+        log "AVISO: vuelva a dejar RESPALDO_MODO=respaldo en el servicio."
+        respaldar
+        return
+    fi
+    gzip -t "$archivo"
+    log "Respaldo de seguridad antes de restaurar:"
+    respaldar
+    log "Restaurando $(basename "$archivo") en $db"
+    sql -e "DROP DATABASE IF EXISTS \`$db\`; CREATE DATABASE \`$db\`"
+    zcat "$archivo" | mysql --defaults-extra-file="$CNF" "$db"
+    date -u +%Y-%m-%dT%H:%M:%SZ >"$marca_restaurado"
+    log "RESTAURACIÓN OK: $db quedó como en $(basename "$archivo")"
+    log "Recuerde volver a dejar RESPALDO_MODO=respaldo en el servicio."
+}
+
 listar() {
     ls -lh "$DESTINO" 2>/dev/null || log "No hay respaldos en $DESTINO"
 }
@@ -134,6 +170,7 @@ listar() {
 case "$MODO" in
     respaldo) respaldar ;;
     simulacro) simulacro ;;
+    restaurar) restaurar ;;
     listar) listar ;;
-    *) log "Modo desconocido: $MODO (use respaldo, simulacro o listar)"; exit 2 ;;
+    *) log "Modo desconocido: $MODO (use respaldo, simulacro, restaurar o listar)"; exit 2 ;;
 esac

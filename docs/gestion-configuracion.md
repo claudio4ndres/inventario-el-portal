@@ -16,7 +16,7 @@ La gestión de la configuración asegura que cada versión del producto y de su 
 | IC-08 | Actas de hito y de validación con el administrador | Google Drive (PDF firmado) | `/Proyecto/Actas` | Autor y administrador |
 | IC-09 | Informes y presentaciones | Google Drive | `/Proyecto/Entregas` | Autor |
 | IC-10 | Configuración de entornos (`.env.example`) | Git | raíz del repositorio | Autor |
-| IC-11 | Base de datos de producción (MySQL) | Respaldos programados de Railway (diario y semanal) | volumen `mysql-volume`; procedimiento en [`docs/respaldo.md`](respaldo.md) | Autor |
+| IC-11 | Base de datos de producción (MySQL) | Servicio cron `respaldo-mysql` en Railway (`mysqldump` diario, últimos 7) | código en `infra/respaldo/`; procedimiento en [`docs/respaldo.md`](respaldo.md) | Autor |
 
 **Nomenclatura de documentos:** `<curso>_<documento>_v<mayor>.<menor>_<AAAA-MM-DD>`. Por ejemplo, `AINC422_requerimientos_v2.0_2026-10-19`.
 
@@ -76,4 +76,4 @@ Al cerrar cada hito se verifica con una lista de chequeo:
 - La CI está en verde.
 - La matriz de trazabilidad HU → RF → causa → control está completa.
 - Los documentos tienen la versión correcta en Drive.
-- El último respaldo diario de la base de datos existe en Railway (IC-11).
+- La última ejecución del cron `respaldo-mysql` terminó bien (IC-11, pestaña *Cron Runs*).
