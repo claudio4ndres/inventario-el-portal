@@ -1,0 +1,8 @@
+﻿codigo_barras;nombre;precio_venta;punto_reorden;clase_abc
+2000000000010;Arroz grado 2 1 kg;1390;10;A
+2000000000900;Fideos corbata 400 g;890;12;A
+2000000000900;Fideos corbata 400 g (repetido);890;12;A
+2000000000910;Galletas de agua 210 g;0;8;B
+2000000000920;Mermelada 250 g;1490;-2;B
+2000000000930;Arroz integral 1 kg;1890;6;X
+;Producto sin código;990;4;C
