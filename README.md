@@ -3,7 +3,7 @@
 Sistema web de gestión de inventario y ventas para el **almacén El Portal** (Valle Grande, Lampa).
 Proyecto de título de Ingeniería en Computación e Informática — Claudio Figueroa Arias, 2026.
 
-**Estado:** `main` contiene el MPV completo (HU01–HU17, RF1–RF9) publicado en Railway: línea base LB-4 (`v1.0.0`) y su mantención `v1.0.1` (PHP 8.4), verificado con 164 pruebas unitarias y de integración en SQLite y MySQL 8.4. El siguiente hito es H5, la validación en ambiente de pruebas que reemplaza al piloto en el local (CC-05). El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
+**Estado:** `main` contiene el MPV completo (HU01–HU17, RF1–RF9) publicado en Railway: línea base LB-4 (`v1.0.0`) y su mantención `v1.0.1` (PHP 8.4), verificado con 167 pruebas unitarias y de integración en SQLite y MySQL 8.4 (ejecución #104, 24-11-2026). El siguiente hito es H5, la validación en ambiente de pruebas que reemplaza al piloto en el local (CC-05). El avance se registra en `docs/backlog.md` y en los [hitos de GitHub](https://github.com/claudio4ndres/inventario-el-portal/milestones).
 
 ## Alcance construido
 
