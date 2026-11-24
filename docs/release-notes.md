@@ -5,12 +5,22 @@ Solo `main` se publica en producción (Railway); `develop` integra los cambios p
 
 | Versión | Fecha | Commit (`main`) | Línea base | Pruebas en la CI |
 |---------|-------|-----------------|------------|------------------|
-| v1.0.1 (propuesta) | 16-11-2026 | `66d6d3e` | Mantención de LB-4 | 164 (989 aserciones) |
+| Sin versión (en producción) | 24-11-2026 | `db4597b` | Operación de LB-4 (sin cambios en la aplicación) | 164 + escenario |
+| v1.0.1 | 16-11-2026 | `66d6d3e` | Mantención de LB-4 | 164 (989 aserciones) |
 | v1.0.0 | 31-10-2026 | `c6745b7` | LB-4 · MPV (H4) | 159 |
 | v0.2.0 | 29-10-2026 | `bb6925b` (`develop`) | LB-3 · Diseño (H3) | 150 |
 | v0.1.0 | 19-10-2026 | `8b9c39e` | LB-2 · Prototipo (H2) | 33 |
 
-## v1.0.1 — 16-11-2026 (en producción, tag pendiente)
+## Sin versión — 24-11-2026 (en producción desde `db4597b`, PR #62)
+
+No cambia la aplicación (`app/`, `routes/`, `resources/` ni migraciones), así que no lleva tag. La próxima versión es `v1.1.0`, al cerrar H5 (LB-5).
+
+- Manual de usuario y catálogos CSV de ejemplo para la validación (PR #58).
+- Respaldo diario de la base de datos con el servicio cron `respaldo-mysql`: RNF3, simulacro de restauración sin diferencias (PR #60, `docs/respaldo.md`).
+- La configuración de Railway pasa a los ajustes de cada servicio y se elimina `railway.json`, porque Railway deja de leerlo el 01-12-2026 (CC-06, PR #61).
+- README con la arquitectura del sistema (PR #56).
+
+## v1.0.1 — 16-11-2026 (tag publicado el 24-11-2026)
 
 **Cambios**
 - Plataforma actualizada a PHP 8.4 y PHPUnit 13 por seguridad (CC-04, RNF4, riesgo R11). La CI falla si las versiones no corresponden (PR #43).
